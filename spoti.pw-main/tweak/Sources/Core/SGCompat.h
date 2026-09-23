@@ -8,11 +8,6 @@ typedef NS_ENUM(NSInteger, UIGlassEffectStyle) {
     UIGlassEffectStyleRegular = 1
 };
 
-@interface UIGlassEffect : UIVisualEffect
-+ (instancetype)effectWithStyle:(NSInteger)style;
-@property (nonatomic, retain) UIColor *tintColor;
-@end
-
 @interface NSObject (SGScrollEdgeEffectStyleCompat)
 + (id)softStyle;
 @end
@@ -49,7 +44,7 @@ typedef NS_ENUM(NSInteger, UIGlassEffectStyle) {
 - (void)setCornerConfiguration:(id)config;
 @end
 
-@interface MPMediaItemAnimatedArtwork : NSObject
+@interface NSObject (SGMPMediaItemAnimatedArtworkCompat)
 - (instancetype)initWithArtworkID:(NSString *)artworkID
        previewImageRequestHandler:(void (^)(CGSize size, void (^done)(UIImage *image)))previewHandler
   videoAssetFileURLRequestHandler:(void (^)(CGSize size, void (^done)(NSURL *url)))videoHandler;

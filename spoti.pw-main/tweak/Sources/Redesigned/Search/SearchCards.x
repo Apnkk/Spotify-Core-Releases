@@ -141,9 +141,14 @@ static void paint(SGRSearchCardParts *parts, UIColor *color) {
     ((CAGradientLayer *)parts.plate.layer).colors = @[(id)color.CGColor, (id)darker(color).CGColor];
     if (@available(iOS 26.0, *)) {
         if (parts.glass) {
-            UIGlassEffect *effect = [UIGlassEffect effectWithStyle:UIGlassEffectStyleClear];
-            effect.tintColor = [color colorWithAlphaComponent:kTintAlpha];
-            parts.glass.effect = effect;
+            Class glassCls = NSClassFromString(@"UIGlassEffect");
+            if (glassCls && [glassCls respondsToSelector:@selector(effectWithStyle:)]) {
+                UIVisualEffect *effect = ((id (*)(id, SEL, NSInteger))objc_msgSend)(glassCls, @selector(effectWithStyle:), UIGlassEffectStyleClear);
+                if ([effect respondsToSelector:@selector(setTintColor:)]) {
+                    ((void (*)(id, SEL, id))objc_msgSend)(effect, @selector(setTintColor:), [color colorWithAlphaComponent:kTintAlpha]);
+                }
+                parts.glass.effect = effect;
+            }
         }
     }
 }
