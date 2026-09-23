@@ -45,8 +45,8 @@ need ldid "brew install ldid"
 need dpkg-deb "brew install dpkg"
 need cyan "uv tool install 'cyan @ git+https://github.com/asdfzxcvbn/pyzule-rw'"
 { ls -d "$THEOS"/sdks/iPhoneOS*.sdk "$(xcode-select -p 2>/dev/null)"/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS*.sdk 2>/dev/null || true; } \
-  | grep -qE 'iPhoneOS(2[6-9]|[3-9][0-9])\.' \
-  || { echo "no iPhoneOS 26+ SDK: xcode-select an Xcode 26 or newer, or put the SDK in $THEOS/sdks" >&2; exit 1; }
+  | grep -qE 'iPhoneOS[0-9]+\.' \
+  || { echo "no iPhoneOS SDK found in Xcode or $THEOS/sdks" >&2; exit 1; }
 # cyan skips -k with only a warning when its environment has no Pillow.
 if [ -n "$ICON" ]; then
   [ -f "$ICON" ] || { echo "no such icon: $ICON" >&2; exit 1; }
