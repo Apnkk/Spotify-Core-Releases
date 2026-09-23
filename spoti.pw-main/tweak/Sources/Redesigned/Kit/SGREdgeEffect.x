@@ -10,11 +10,13 @@ static void soften(UIScrollView *scrollView) {
     if (@available(iOS 26.0, *)) {
         // The style last set here, so a layout pass the setter itself causes does not set it again.
         static char setKey;
-        UIScrollEdgeEffect *top = scrollView.topEdgeEffect;
-        if (top.style == objc_getAssociatedObject(scrollView, &setKey)) return;
-        UIScrollEdgeEffectStyle *soft = UIScrollEdgeEffectStyle.softStyle;
-        top.style = soft;
-        objc_setAssociatedObject(scrollView, &setKey, top.style, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+        id top = scrollView.topEdgeEffect;
+        if ([top style] == objc_getAssociatedObject(scrollView, &setKey)) return;
+        Class styleClass = NSClassFromString(@"UIScrollEdgeEffectStyle");
+        id soft = [styleClass respondsToSelector:@selector(softStyle)] ? [styleClass performSelector:@selector(softStyle)] : nil;
+        if (!soft) return;
+        [top setStyle:soft];
+        objc_setAssociatedObject(scrollView, &setKey, [top style], OBJC_ASSOCIATION_RETAIN_NONATOMIC);
         static dispatch_once_t once;
         dispatch_once(&once, ^{ SGLog(@"soft top edge: first scroll view %@", NSStringFromClass(scrollView.class)); });
     }

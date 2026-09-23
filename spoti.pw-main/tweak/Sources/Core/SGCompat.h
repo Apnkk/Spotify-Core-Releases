@@ -8,20 +8,20 @@ typedef NS_ENUM(NSInteger, UIGlassEffectStyle) {
     UIGlassEffectStyleRegular = 1
 };
 
-@interface UIScrollEdgeEffectStyle : NSObject
-+ (instancetype)softStyle;
+@interface NSObject (SGScrollEdgeEffectStyleCompat)
++ (id)softStyle;
 @end
 
-@interface UIScrollEdgeEffect : NSObject
-@property (nonatomic, retain) UIScrollEdgeEffectStyle *style;
+@interface NSObject (SGScrollEdgeEffectCompat)
+@property (nonatomic, retain) id style;
 @end
 
 @interface UIScrollView (SGCompat)
-@property (nonatomic, readonly) UIScrollEdgeEffect *topEdgeEffect;
+@property (nonatomic, readonly) id topEdgeEffect;
 @end
 
-@interface UIGlassEffect : UIVisualEffect
-+ (instancetype)effectWithStyle:(UIGlassEffectStyle)style;
+@interface UIVisualEffect (SGGlassEffectCompat)
++ (id)effectWithStyle:(NSInteger)style;
 @property (nonatomic, retain) UIColor *tintColor;
 @end
 
@@ -30,13 +30,13 @@ typedef NS_ENUM(NSInteger, UIGlassEffectStyle) {
 + (instancetype)glassButtonConfiguration;
 @end
 
-@interface UICornerRadius : NSObject
-+ (instancetype)fixedRadius:(CGFloat)radius;
+@interface NSObject (SGUICornerRadiusCompat)
++ (id)fixedRadius:(CGFloat)radius;
 @end
 
-@interface UICornerConfiguration : NSObject
-+ (instancetype)capsuleConfiguration;
-+ (instancetype)configurationWithUniformRadius:(id)radius;
+@interface NSObject (SGUICornerConfigurationCompat)
++ (id)capsuleConfiguration;
++ (id)configurationWithUniformRadius:(id)radius;
 @end
 
 @interface UIView (SGCompat)
