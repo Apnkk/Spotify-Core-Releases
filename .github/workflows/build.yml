@@ -10,6 +10,8 @@ on:
 jobs:
   build:
     runs-on: macos-15
+    permissions:
+      contents: write
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
@@ -83,6 +85,12 @@ jobs:
                -f "$SPOTI_DEB" \
                -f "$EEVEE_DEB" \
                -o out/Spotify_Eevee_SpotiPW_Combined.ipa
+
+      - name: Upload IPA Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: Spotify_Eevee_SpotiPW_Combined
+          path: out/Spotify_Eevee_SpotiPW_Combined.ipa
 
       - name: Release Combined IPA
         uses: softprops/action-gh-release@v2
