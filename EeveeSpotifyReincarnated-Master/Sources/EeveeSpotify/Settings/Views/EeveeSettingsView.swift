@@ -61,7 +61,7 @@ struct EeveeSettingsView: View {
             } label: {
                 NavigationSectionView(
                     color: Color(hex: "#AF52DE"),
-                    title: "Mod Settings (spoti.pw)",
+                    title: "Spotify Core By Ares",
                     imageSystemName: "slider.horizontal.3"
                 )
             }

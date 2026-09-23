@@ -460,55 +460,24 @@ static __weak SGDonateController *sg_sheet;
 static BOOL sg_offered;
 
 void SGShowDonateSheet(void) {
-    UIViewController *top = SGTopController();
-    if (sg_sheet || !top || [top isKindOfClass:UIAlertController.class]) return;
-    SGDonateController *sheet = [SGDonateController new];
-    sg_sheet = sheet;
-    [top presentViewController:sheet animated:NO completion:nil];
 }
 
 SGModRow *SGDonateRow(void) {
-    SGModRow *row = SGWithSymbol(SGActionRow(@"Support spoti.pw", @"Buy the student behind it a coffee", ^{ SGShowDonateSheet(); }), @"cup.and.saucer.fill");
-    row.color = SGKofiColor();
+    SGModRow *row = SGWithSymbol(SGLinkRow(@"Ares", @"aress.ovh", @"https://aress.ovh"), @"globe");
+    row.color = [UIColor colorWithRed:0.40 green:0.65 blue:1.0 alpha:1.0];
     return row;
 }
 
 // Never over the tour or an alert. On schedule it also stays out of an update-notice run and asks once
 // a run; after a tour, first or replayed from the Mod page, it always comes.
 static void offerWhenClear(NSInteger tries) {
-    BOOL afterTour = SGDonateAfterTourPending();
-    if (!afterTour && (sg_offered || now() < nextAsk() || SGUpdateNoticeShown())) return;
-    UIViewController *top = SGTopController();
-    BOOL busy = !top || SGOnboardingShowing() || [top isKindOfClass:UIAlertController.class]
-        || UIApplication.sharedApplication.applicationState != UIApplicationStateActive;
-    if (busy) {
-        if (tries > 0)
-            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(kRetry * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{ offerWhenClear(tries - 1); });
-        return;
-    }
-    sg_offered = YES;
-    askAgainIn(kEvery);
-    [NSUserDefaults.standardUserDefaults removeObjectForKey:kAfterTourKey];
-    SGShowDonateSheet();
-    SGLog(@"donate: asked over %@%@", NSStringFromClass(top.class), afterTour ? @", after the tour" : @"");
 }
 
 void SGDonateAfterTour(BOOL restarting) {
-    [NSUserDefaults.standardUserDefaults setBool:YES forKey:kAfterTourKey];
-    if (!restarting) SGOfferDonate();
 }
 
 void SGOfferDonate(void) {
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.2 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{ offerWhenClear(kTries); });
 }
 
 void SGWatchForDonate(void) {
-    nextAsk();
-    __block id observer = [NSNotificationCenter.defaultCenter addObserverForName:UIApplicationDidBecomeActiveNotification
-                                                                          object:nil
-                                                                           queue:NSOperationQueue.mainQueue
-                                                                      usingBlock:^(NSNotification *note) {
-        [NSNotificationCenter.defaultCenter removeObserver:observer];
-        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(kSettle * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{ offerWhenClear(kTries); });
-    }];
 }

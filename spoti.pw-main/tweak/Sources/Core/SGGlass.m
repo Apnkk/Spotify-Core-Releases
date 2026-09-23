@@ -56,10 +56,16 @@ void SGShapeGlass(UIView *glass, CGFloat radius, BOOL capsule) {
     id shape = nil;
     SEL setter = NSSelectorFromString(@"setCornerConfiguration:");
     if (config && [glass respondsToSelector:setter]) {
-        if (capsule && [config respondsToSelector:@selector(capsuleConfiguration)]) {
-            shape = [config capsuleConfiguration];
-        } else if ([config respondsToSelector:@selector(configurationWithUniformRadius:)] && [cornerRadius respondsToSelector:@selector(fixedRadius:)]) {
-            shape = [config configurationWithUniformRadius:[cornerRadius fixedRadius:radius]];
+        SEL capsuleSel = NSSelectorFromString(@"capsuleConfiguration");
+        SEL configRadiusSel = NSSelectorFromString(@"configurationWithUniformRadius:");
+        SEL fixedRadiusSel = NSSelectorFromString(@"fixedRadius:");
+        if (capsule && [config respondsToSelector:capsuleSel]) {
+            shape = ((id (*)(id, SEL))objc_msgSend)(config, capsuleSel);
+        } else if ([config respondsToSelector:configRadiusSel] && [cornerRadius respondsToSelector:fixedRadiusSel]) {
+            id fixed = ((id (*)(id, SEL, CGFloat))objc_msgSend)(cornerRadius, fixedRadiusSel, radius);
+            if (fixed) {
+                shape = ((id (*)(id, SEL, id))objc_msgSend)(config, configRadiusSel, fixed);
+            }
         }
     }
     if (shape && [glass respondsToSelector:setter]) {
