@@ -53,29 +53,15 @@ void SGShapeGlass(UIView *glass, CGFloat radius, BOOL capsule) {
     Class config = NSClassFromString(@"UICornerConfiguration");
     Class cornerRadius = NSClassFromString(@"UICornerRadius");
     id shape = nil;
-    SEL setCornerSel = NSSelectorFromString(@"setCornerConfiguration:");
-    if (config && [glass respondsToSelector:setCornerSel]) {
-        SEL capsuleSel = NSSelectorFromString(@"capsuleConfiguration");
-        SEL uniformSel = NSSelectorFromString(@"configurationWithUniformRadius:");
-        SEL fixedSel = NSSelectorFromString(@"fixedRadius:");
-        if (capsule && [config respondsToSelector:capsuleSel]) {
-            #pragma clang diagnostic push
-            #pragma clang diagnostic ignored "-Warc-performSelector-leaks"
-            shape = [config performSelector:capsuleSel];
-            #pragma clang diagnostic pop
-        } else if ([config respondsToSelector:uniformSel] && [cornerRadius respondsToSelector:fixedSel]) {
-            #pragma clang diagnostic push
-            #pragma clang diagnostic ignored "-Warc-performSelector-leaks"
-            id fixed = [cornerRadius performSelector:fixedSel withObject:(__bridge id)(void *)(intptr_t)radius];
-            shape = [config performSelector:uniformSel withObject:fixed];
-            #pragma clang diagnostic pop
+    if (config && [glass respondsToSelector:@selector(setCornerConfiguration:)]) {
+        if (capsule && [config respondsToSelector:@selector(capsuleConfiguration)]) {
+            shape = [config capsuleConfiguration];
+        } else if ([config respondsToSelector:@selector(configurationWithUniformRadius:)] && [cornerRadius respondsToSelector:@selector(fixedRadius:)]) {
+            shape = [config configurationWithUniformRadius:[cornerRadius fixedRadius:radius]];
         }
     }
     if (shape) {
-        #pragma clang diagnostic push
-        #pragma clang diagnostic ignored "-Warc-performSelector-leaks"
-        [glass performSelector:setCornerSel withObject:shape];
-        #pragma clang diagnostic pop
+        [glass setCornerConfiguration:shape];
         glass.clipsToBounds = NO;
     } else {
         glass.layer.cornerRadius = capsule ? glass.bounds.size.height / 2 : radius;
