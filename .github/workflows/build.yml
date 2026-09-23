@@ -41,7 +41,12 @@ jobs:
       - name: Build EeveeSpotify Tweak
         run: |
           cd EeveeSpotifyReincarnated-Master
-          export THEOS=~/theos
+          chmod +x Tools/SwiftProtobufBuild/build-eeveeswiftprotobuf.sh
+          export THEOS="$HOME/theos"
+          make build-eeveeswiftprotobuf
+          test -d "$THEOS/lib/iphone/rootless/EeveeSwiftProtobuf.framework" \
+            || test -d "$THEOS/lib/iphone/roothide/EeveeSwiftProtobuf.framework" \
+            || { echo "EeveeSwiftProtobuf.framework was not generated"; find "$THEOS/lib/iphone" -maxdepth 3 -iname '*SwiftProtobuf*' -print; exit 1; }
           make clean package
 
       - name: Inject Both Tweaks into Spotify IPA
