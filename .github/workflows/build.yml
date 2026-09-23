@@ -1,0 +1,61 @@
+name: Build Combined Spotify IPA (Eevee + spoti.pw)
+
+on:
+  workflow_dispatch:
+    inputs:
+      ipa_url:
+        description: 'Direct download URL to decrypted Spotify 9.1.84 IPA'
+        required: true
+
+jobs:
+  build:
+    runs-on: macos-15
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: |
+          brew install make ldid dpkg
+          pip3 install "cyan @ git+https://github.com/asdfzxcvbn/pyzule-rw" pillow
+
+      - name: Setup Theos
+        run: |
+          git clone --recursive https://github.com/theos/theos.git ~/theos
+
+      - name: Download Decrypted Spotify IPA
+        run: |
+          mkdir -p ipa
+          curl -L -o ipa/spotify.ipa "${{ github.event.inputs.ipa_url }}"
+
+      - name: Build spoti.pw Tweak
+        run: |
+          cd spoti.pw-main
+          export THEOS=~/theos
+          make release IPA=../ipa/spotify.ipa
+
+      - name: Build EeveeSpotify Tweak
+        run: |
+          cd EeveeSpotifyReincarnated-Master
+          export THEOS=~/theos
+          make clean package
+
+      - name: Inject Both Tweaks into Spotify IPA
+        run: |
+          SPOTI_DEB=$(ls spoti.pw-main/tweak/packages/*.deb | head -n 1)
+          EEVEE_DEB=$(ls EeveeSpotifyReincarnated-Master/packages/*.deb | head -n 1)
+          mkdir -p out
+          cyan -i ipa/spotify.ipa \
+               -f "$SPOTI_DEB" \
+               -f "$EEVEE_DEB" \
+               -o out/Spotify_Eevee_SpotiPW_Combined.ipa
+
+      - name: Release Combined IPA
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v1.0.0
+          name: "Spotify Eevee + spoti.pw (Modified by Ares)"
+          body: "Combined Spotify IPA featuring EeveeSpotify Premium patch & spoti.pw Liquid Glass UI redesign, modified by Ares."
+          files: out/Spotify_Eevee_SpotiPW_Combined.ipa
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
