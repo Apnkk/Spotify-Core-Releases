@@ -17,7 +17,10 @@ jobs:
       - name: Install dependencies
         run: |
           brew install make ldid dpkg
-          pip3 install --break-system-packages "cyan @ git+https://github.com/asdfzxcvbn/pyzule-rw" pillow
+          python3 -m venv "$RUNNER_TEMP/pyzule-venv"
+          "$RUNNER_TEMP/pyzule-venv/bin/python" -m pip install --upgrade pip
+          "$RUNNER_TEMP/pyzule-venv/bin/python" -m pip install "cyan @ git+https://github.com/asdfzxcvbn/pyzule-rw" pillow
+          echo "$RUNNER_TEMP/pyzule-venv/bin" >> "$GITHUB_PATH"
 
       - name: Setup Theos
         run: |
