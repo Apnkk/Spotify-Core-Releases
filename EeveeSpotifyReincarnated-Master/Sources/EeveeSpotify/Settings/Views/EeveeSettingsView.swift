@@ -1,5 +1,6 @@
 import SwiftUI
 import UIKit
+import Darwin
 
 struct EeveeSettingsView: View {
     let navigationController: UINavigationController
@@ -51,8 +52,20 @@ struct EeveeSettingsView: View {
                 )
             }
             
-            //
-            
+            Button {
+                if let sym = dlsym(dlopen(nil, RTLD_NOW), "SGOpenModSettingsDirect") {
+                    typealias Fn = @convention(c) (UIViewController?) -> Void
+                    let fn = unsafeBitCast(sym, to: Fn.self)
+                    fn(navigationController)
+                }
+            } label: {
+                NavigationSectionView(
+                    color: Color(hex: "#AF52DE"),
+                    title: "Mod Settings (spoti.pw)",
+                    imageSystemName: "slider.horizontal.3"
+                )
+            }
+
             Button {
                 pushSettingsController(
                     with: EeveePatchingSettingsView(),

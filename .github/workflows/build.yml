@@ -33,13 +33,6 @@ jobs:
           mkdir -p ipa
           curl -L -o ipa/spotify.ipa "${{ github.event.inputs.ipa_url }}"
 
-      - name: Build spoti.pw Tweak
-        run: |
-          cd spoti.pw-main
-          chmod +x scripts/*.sh scripts/*.py
-          export THEOS=~/theos
-          make release IPA=../ipa/spotify.ipa
-
       - name: Build EeveeSpotify Tweak
         run: |
           cd EeveeSpotifyReincarnated-Master
@@ -76,15 +69,17 @@ jobs:
 
           make clean package
 
-      - name: Inject Both Tweaks into Spotify IPA
+      - name: Build spoti.pw & Combine Tweaks into IPA
         run: |
-          SPOTI_DEB=$(ls spoti.pw-main/tweak/packages/*.deb | head -n 1)
-          EEVEE_DEB=$(ls EeveeSpotifyReincarnated-Master/packages/*.deb | head -n 1)
+          EEVEE_DEB="$(pwd)/$(ls EeveeSpotifyReincarnated-Master/packages/*.deb | head -n 1)"
+          test -f "$EEVEE_DEB" || { echo "EeveeSpotify deb not found"; exit 1; }
+          IPA_PATH="$(pwd)/ipa/spotify.ipa"
+          OUT_PATH="$(pwd)/out/Spotify_Eevee_SpotiPW_Combined.ipa"
           mkdir -p out
-          cyan -i ipa/spotify.ipa \
-               -f "$SPOTI_DEB" \
-               -f "$EEVEE_DEB" \
-               -o out/Spotify_Eevee_SpotiPW_Combined.ipa
+          cd spoti.pw-main
+          chmod +x scripts/*.sh scripts/*.py
+          export THEOS="$HOME/theos"
+          ./scripts/pipeline.sh "$IPA_PATH" --no-flex --extra-deb "$EEVEE_DEB" -o "$OUT_PATH"
 
       - name: Upload IPA Artifact
         uses: actions/upload-artifact@v4

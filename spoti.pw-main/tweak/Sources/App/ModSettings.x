@@ -154,6 +154,12 @@ void SGOpenModSettings(UIView *source) {
     SGShowPage(nav.topViewController ?: SGTopController(), modSettingsPage());
 }
 
+__attribute__((visibility("default"))) void SGOpenModSettingsDirect(UIViewController *presenting) {
+    if (!presenting) presenting = SGTopController();
+    UINavigationController *nav = navigationIn(presenting);
+    SGShowPage(nav.topViewController ?: presenting, modSettingsPage());
+}
+
 // At the end of the settings list, or above the first row of the drawer's, with the inset for it
 // added again whenever Spotify resets the inset.
 static void placeRow(UICollectionView *list, SGModSettingsRow *row) {
@@ -189,7 +195,9 @@ static UIViewController *settingsListIn(UIViewController *page, Class kind) {
 }
 
 static BOOL isSettingsRoot(UIViewController *list) {
-    for (UIViewController *page in list.navigationController.viewControllers) {
+    UINavigationController *nav = list.navigationController ?: (list.parentViewController ? list.parentViewController.navigationController : nil);
+    if (!nav) return YES;
+    for (UIViewController *page in nav.viewControllers) {
         UIViewController *found = settingsListIn(page, list.class);
         if (found) return found == list;
     }
@@ -200,21 +208,21 @@ static BOOL isSettingsRoot(UIViewController *list) {
 - (void)viewDidLayoutSubviews {
     %orig;
     BOOL root = isSettingsRoot((UIViewController *)self);
-    for (UIView *sub in ((UIViewController *)self).view.subviews) {
-        if (![sub isKindOfClass:UICollectionView.class]) continue;
+    SGForEachView(((UIViewController *)self).view, ^(UIView *sub) {
+        if (![sub isKindOfClass:UICollectionView.class]) return;
         SGModSettingsRow *row = objc_getAssociatedObject(sub, &kRowKey);
         // A page that laid itself out before it was on the stack looked like the list for as long
         // as that took; the row goes again as soon as it can be seen for what it is.
         if (!root) {
             [row removeFromSuperview];
             objc_setAssociatedObject(sub, &kRowKey, nil, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
-            continue;
+            return;
         }
-        if (row) continue;
+        if (row) return;
         row = [[SGModSettingsRow alloc] initWithFrame:CGRectZero];
         objc_setAssociatedObject(sub, &kRowKey, row, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
         [sub addSubview:row];
-    }
+    });
 }
 %end
 

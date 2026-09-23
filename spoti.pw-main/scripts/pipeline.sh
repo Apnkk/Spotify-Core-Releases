@@ -24,7 +24,7 @@ FLEX_DEB="$ROOT/vendor/com.hopeless.autoflex_0.0.1_iphoneos-arm.deb"
 BUNDLE_ID="${BUNDLE_ID:-}"
 mkdir -p "$ROOT/out"
 
-IN="" OUT="" WITH_FLEX=1 INSTALL=0 NAME="" ICON=""
+IN="" OUT="" WITH_FLEX=1 INSTALL=0 NAME="" ICON="" EXTRA_DEBS=()
 while [ $# -gt 0 ]; do
   case "$1" in
     -o) OUT="$2"; shift 2 ;;
@@ -32,6 +32,7 @@ while [ $# -gt 0 ]; do
     --icon) ICON="$2"; shift 2 ;;
     --no-flex) WITH_FLEX=0; shift ;;
     --install) INSTALL=1; shift ;;
+    --extra-deb) EXTRA_DEBS+=("$2"); shift 2 ;;
     -h|--help) sed -n '2,11p' "$0"; exit 0 ;;
     *) IN="$1"; shift ;;
   esac
@@ -87,6 +88,10 @@ echo "    $TWEAK_DEB"
 
 FILES=("$TWEAK_DEB")
 [ "$WITH_FLEX" = 1 ] && FILES+=("$FLEX_DEB")
+for extra in "${EXTRA_DEBS[@]}"; do
+  [ -f "$extra" ] || { echo "no such extra deb: $extra" >&2; exit 1; }
+  FILES+=("$extra")
+done
 
 # The Live Activity (Shared/LiveActivity) draws in a widget extension of its own.
 if xcrun --sdk iphoneos --find swiftc >/dev/null 2>&1; then
