@@ -82,6 +82,19 @@ for ARCH in arm64 arm64e; do
     cp "$OBJDIR/${MODULE}.abi.json"        "$OUT/Modules/${MODULE}.swiftmodule/${ARCH}-apple-ios.abi.json" 2>/dev/null || true
 done
 
+mkdir -p "$OUT/Headers"
+cat > "$OUT/Headers/${MODULE}.h" <<EOF
+#import <Foundation/Foundation.h>
+EOF
+
+cat > "$OUT/Modules/module.modulemap" <<EOF
+framework module ${MODULE} {
+    umbrella header "${MODULE}.h"
+    export *
+    module * { export * }
+}
+EOF
+
 cat > "$OUT/Info.plist" <<EOF
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">

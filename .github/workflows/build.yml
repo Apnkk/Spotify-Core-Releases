@@ -43,10 +43,35 @@ jobs:
           cd EeveeSpotifyReincarnated-Master
           chmod +x Tools/SwiftProtobufBuild/build-eeveeswiftprotobuf.sh
           export THEOS="$HOME/theos"
+
           make build-eeveeswiftprotobuf
-          test -d "$THEOS/lib/iphone/rootless/EeveeSwiftProtobuf.framework" \
-            || test -d "$THEOS/lib/iphone/roothide/EeveeSwiftProtobuf.framework" \
-            || { echo "EeveeSwiftProtobuf.framework was not generated"; find "$THEOS/lib/iphone" -maxdepth 3 -iname '*SwiftProtobuf*' -print; exit 1; }
+
+          FRAMEWORK_DIR="$THEOS/lib/iphone/rootless/EeveeSwiftProtobuf.framework"
+          if [ ! -d "$FRAMEWORK_DIR" ]; then
+            FRAMEWORK_DIR="$THEOS/lib/iphone/roothide/EeveeSwiftProtobuf.framework"
+          fi
+
+          test -d "$FRAMEWORK_DIR" || {
+            echo "EeveeSwiftProtobuf.framework was not generated"
+            find "$THEOS/lib/iphone" -maxdepth 4 -iname '*SwiftProtobuf*' -print
+            exit 1
+          }
+
+          test -f "$FRAMEWORK_DIR/Modules/module.modulemap" || {
+            echo "EeveeSwiftProtobuf framework has no Swift module"
+            find "$FRAMEWORK_DIR" -maxdepth 4 -type f -print
+            exit 1
+          }
+
+          case "$FRAMEWORK_DIR" in
+            */roothide/*)
+              export THEOS_PACKAGE_SCHEME=roothide
+              ;;
+            *)
+              export THEOS_PACKAGE_SCHEME=rootless
+              ;;
+          esac
+
           make clean package
 
       - name: Inject Both Tweaks into Spotify IPA

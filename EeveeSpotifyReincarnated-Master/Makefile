@@ -20,6 +20,12 @@ EeveeSpotify_SWIFTFLAGS = -ISources/EeveeSpotifyC/include -Osize
 EeveeSpotify_EXTRA_FRAMEWORKS = EeveeSwiftProtobuf
 EeveeSpotify_CFLAGS = -fobjc-arc -ISources/EeveeSpotifyC/include -Os
 
+# Make the custom framework visible to Swift and the linker.
+EeveeSwiftProtobuf_PLATFORM_DIR := $(THEOS)/lib/iphone/$(or $(THEOS_PACKAGE_SCHEME),rootless)
+
+EeveeSpotify_SWIFTFLAGS += -F$(EeveeSwiftProtobuf_PLATFORM_DIR)
+EeveeSpotify_LDFLAGS += -F$(EeveeSwiftProtobuf_PLATFORM_DIR)
+
 # RootHide's compatibility implementation of libroot resolves jailbreak paths
 # through libroothide at runtime. Rootless builds continue to use libroot.
 ifeq ($(THEOS_PACKAGE_SCHEME),roothide)
