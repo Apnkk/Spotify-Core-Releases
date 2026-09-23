@@ -6,13 +6,7 @@
 
 NSString *const SGKofiURL = @"https://ko-fi.com/darkksh";
 
-// Outside the "spotifyglass." prefix, so Reset all settings does not bring the sheet back early.
-static NSString *const kNextKey = @"spotipw.donate.next";
-static NSString *const kAfterTourKey = @"spotipw.donate.aftertour";
-static const NSTimeInterval kDay = 86400;
-static const NSTimeInterval kFirstAsk = 2 * kDay, kEvery = 14 * kDay, kAfterDonating = 90 * kDay;
-static const NSTimeInterval kSettle = 20, kRetry = 5;
-static const NSInteger kTries = 24;
+
 
 static UIColor *rgb(uint32_t v, CGFloat alpha) {
     return [UIColor colorWithRed:((v >> 16) & 0xFF) / 255.0 green:((v >> 8) & 0xFF) / 255.0 blue:(v & 0xFF) / 255.0 alpha:alpha];
@@ -223,26 +217,8 @@ static CAShapeLayer *newStroke(CGFloat width) {
 
 #pragma mark - schedule
 
-static NSTimeInterval now(void) {
-    return NSDate.date.timeIntervalSince1970;
-}
-
-static NSTimeInterval nextAsk(void) {
-    NSUserDefaults *store = NSUserDefaults.standardUserDefaults;
-    double next = [store doubleForKey:kNextKey];
-    if (next <= 0) {
-        next = now() + kFirstAsk;
-        [store setDouble:next forKey:kNextKey];
-    }
-    return next;
-}
-
-static void askAgainIn(NSTimeInterval wait) {
-    [NSUserDefaults.standardUserDefaults setDouble:now() + wait forKey:kNextKey];
-}
-
 BOOL SGDonateAfterTourPending(void) {
-    return [NSUserDefaults.standardUserDefaults boolForKey:kAfterTourKey];
+    return NO;
 }
 
 #pragma mark - sheet
@@ -443,7 +419,6 @@ static char kCardGlassKey;
 }
 
 - (void)donate {
-    askAgainIn(kAfterDonating);
     SGLog(@"donate: opened Ko-fi");
     [self leaveThen:^{ SGOpenURL(SGKofiURL); }];
 }
@@ -456,9 +431,6 @@ static char kCardGlassKey;
 
 #pragma mark - entry
 
-static __weak SGDonateController *sg_sheet;
-static BOOL sg_offered;
-
 void SGShowDonateSheet(void) {
 }
 
@@ -466,11 +438,6 @@ SGModRow *SGDonateRow(void) {
     SGModRow *row = SGWithSymbol(SGLinkRow(@"Ares", @"aress.ovh", @"https://aress.ovh"), @"globe");
     row.color = [UIColor colorWithRed:0.40 green:0.65 blue:1.0 alpha:1.0];
     return row;
-}
-
-// Never over the tour or an alert. On schedule it also stays out of an update-notice run and asks once
-// a run; after a tour, first or replayed from the Mod page, it always comes.
-static void offerWhenClear(NSInteger tries) {
 }
 
 void SGDonateAfterTour(BOOL restarting) {
