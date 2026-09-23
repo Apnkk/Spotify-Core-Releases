@@ -50,7 +50,9 @@ static UIImage *filled(UIImage *image, CGSize size) {
 
 static id artworkFor(NSString *artworkID, NSURL *file, UIImage *still) {
     if (@available(iOS 26.0, *)) {
-        return [[MPMediaItemAnimatedArtwork alloc] initWithArtworkID:artworkID
+        Class cls = NSClassFromString(@"MPMediaItemAnimatedArtwork");
+        if (!cls) return nil;
+        return [[cls alloc] initWithArtworkID:artworkID
             previewImageRequestHandler:^(CGSize size, void (^done)(UIImage *image)) {
                 SGLog(@"lock artwork: still asked at %.0fx%.0f", size.width, size.height);
                 done(filled(still ?: coverImage(size), size));

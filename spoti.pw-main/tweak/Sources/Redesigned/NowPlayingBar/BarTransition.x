@@ -18,6 +18,7 @@
 // (npbSnapshotView, tabBarSnapshotView); which of the two 9.1.78 runs is not known, so both are hooked
 // and the log says which fired.
 #import "Core/SGCore.h"
+#import <objc/message.h>
 
 @interface SPTBarOverlayPresentationTransition : NSObject
 - (UIView *)bottomBarView;
@@ -48,8 +49,15 @@ static UIVisualEffectView *copyPane(UIView *pane) {
     glass.overrideUserInterfaceStyle = pane.traitCollection.userInterfaceStyle;
     if (platter) {
         SGShapeGlass(glass, pane.bounds.size.height / 2, YES);
-    } else if ([pane respondsToSelector:@selector(cornerConfiguration)] && [glass respondsToSelector:@selector(setCornerConfiguration:)]) {
-        [glass setCornerConfiguration:[(id)pane cornerConfiguration]];
+    } else {
+        SEL getCornerConfig = NSSelectorFromString(@"cornerConfiguration");
+        SEL setCornerConfig = NSSelectorFromString(@"setCornerConfiguration:");
+        if ([pane respondsToSelector:getCornerConfig] && [glass respondsToSelector:setCornerConfig]) {
+            id config = ((id (*)(id, SEL))objc_msgSend)(pane, getCornerConfig);
+            if (config) {
+                ((void (*)(id, SEL, id))objc_msgSend)(glass, setCornerConfig, config);
+            }
+        }
     }
     glass.layer.cornerRadius = pane.layer.cornerRadius;
     glass.layer.cornerCurve = pane.layer.cornerCurve;

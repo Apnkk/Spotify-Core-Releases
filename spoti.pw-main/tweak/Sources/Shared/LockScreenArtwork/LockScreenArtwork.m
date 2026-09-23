@@ -1,6 +1,8 @@
 // What the hook, the harness and the settings share: the order of the sources, which key this iOS
 // takes a clip under, and putting one there.
 #import <MediaPlayer/MediaPlayer.h>
+#import <objc/message.h>
+#import "Core/SGCore.h"
 #import "LockScreenArtwork.h"
 
 NSString *const SGArtworkSourceSpotify = @"spotify";
@@ -22,12 +24,18 @@ void SGArtworkSetOrder(NSArray<NSString *> *order) {
 }
 
 BOOL SGAnimatedArtworkAvailable(void) {
-    if (@available(iOS 26.0, *)) return MPMediaItemAnimatedArtwork.class != nil;
+    if (@available(iOS 26.0, *)) return NSClassFromString(@"MPMediaItemAnimatedArtwork") != nil;
     return NO;
 }
 
 NSArray<NSString *> *SGAnimatedArtworkKeys(void) {
-    if (@available(iOS 26.0, *)) return MPNowPlayingInfoCenter.supportedAnimatedArtworkKeys;
+    if (@available(iOS 26.0, *)) {
+        Class center = NSClassFromString(@"MPNowPlayingInfoCenter");
+        SEL sel = NSSelectorFromString(@"supportedAnimatedArtworkKeys");
+        if (center && [center respondsToSelector:sel]) {
+            return ((id (*)(id, SEL))objc_msgSend)(center, sel);
+        }
+    }
     return nil;
 }
 

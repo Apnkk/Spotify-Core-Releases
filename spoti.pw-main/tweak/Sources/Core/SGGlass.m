@@ -1,5 +1,6 @@
 #import "SGGlass.h"
 #import "SGRuntime.h"
+#import <objc/message.h>
 
 // +effectWithStyle: is the only initialiser UIGlassEffect has; a bare -init leaves the material
 // unresolved and the pane renders as a plain blur, while the capsule shape, which is the view's
@@ -53,15 +54,16 @@ void SGShapeGlass(UIView *glass, CGFloat radius, BOOL capsule) {
     Class config = NSClassFromString(@"UICornerConfiguration");
     Class cornerRadius = NSClassFromString(@"UICornerRadius");
     id shape = nil;
-    if (config && [glass respondsToSelector:@selector(setCornerConfiguration:)]) {
+    SEL setter = NSSelectorFromString(@"setCornerConfiguration:");
+    if (config && [glass respondsToSelector:setter]) {
         if (capsule && [config respondsToSelector:@selector(capsuleConfiguration)]) {
             shape = [config capsuleConfiguration];
         } else if ([config respondsToSelector:@selector(configurationWithUniformRadius:)] && [cornerRadius respondsToSelector:@selector(fixedRadius:)]) {
             shape = [config configurationWithUniformRadius:[cornerRadius fixedRadius:radius]];
         }
     }
-    if (shape) {
-        [glass setCornerConfiguration:shape];
+    if (shape && [glass respondsToSelector:setter]) {
+        ((void (*)(id, SEL, id))objc_msgSend)(glass, setter, shape);
         glass.clipsToBounds = NO;
     } else {
         glass.layer.cornerRadius = capsule ? glass.bounds.size.height / 2 : radius;
