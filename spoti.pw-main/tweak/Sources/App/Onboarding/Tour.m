@@ -28,8 +28,15 @@ static char kPaneKey;
 
 static UIButton *glassButton(NSString *title) {
     UIButtonConfiguration *config;
-    if (@available(iOS 26.0, *)) config = [UIButtonConfiguration prominentGlassButtonConfiguration];
-    else config = [UIButtonConfiguration filledButtonConfiguration];
+    SEL glassSel = NSSelectorFromString(@"prominentGlassButtonConfiguration");
+    if ([UIButtonConfiguration respondsToSelector:glassSel]) {
+        #pragma clang diagnostic push
+        #pragma clang diagnostic ignored "-Warc-performSelector-leaks"
+        config = [UIButtonConfiguration performSelector:glassSel];
+        #pragma clang diagnostic pop
+    } else {
+        config = [UIButtonConfiguration filledButtonConfiguration];
+    }
     config.cornerStyle = UIButtonConfigurationCornerStyleCapsule;
     config.baseBackgroundColor = SGGreen();
     config.baseForegroundColor = UIColor.blackColor;
