@@ -9,14 +9,14 @@
       "name": "Spotify Core",
       "bundleIdentifier": "com.spotify.client",
       "developerName": "Ares",
-      "version": "0.22.28",
-      "versionDate": "2026-09-24T23:34:04Z",
-      "versionDescription": "Release v0.22.28: EeveeSpotify + Spotify Core By Ares Combined",
-      "downloadURL": "https://github.com/Apnkk/Spotify-Core-Releases/releases/download/v0.22.28/Spotify_Eevee_SpotiPW_Combined.ipa",
+      "version": "0.22.29",
+      "versionDate": "2026-09-24T23:52:30Z",
+      "versionDescription": "Release v0.22.29: EeveeSpotify + Spotify Core By Ares Combined",
+      "downloadURL": "https://github.com/Apnkk/Spotify-Core-Releases/releases/download/v0.22.29/Spotify_Eevee_SpotiPW_Combined.ipa",
       "localizedDescription": "EeveeSpotify Premium features fused with the revolutionary Liquid Glass interface, custom Ares themes, alternate icons, and audio DSP.",
       "iconURL": "https://raw.githubusercontent.com/Apnkk/Spotify-Core-Releases/main/assets/ares_logo.png",
       "tintColor": "1DB954",
-      "size": 147423745
+      "size": 147423507
     }
   ]
 }
