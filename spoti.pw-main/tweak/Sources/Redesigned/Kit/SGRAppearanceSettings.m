@@ -3,17 +3,24 @@
 #import "Settings/SGPageStyle.h"
 #import "SGRAccent.h"
 
+static void applyAccentHex(NSInteger hex) {
+    SGSetInt(SGRKeyAccent, (int)hex);
+}
+
 // Going back to Spotify's green is offered only once a colour of the mod's is set, so a stray tap
 // cannot wipe it.
 static void chooseAccent(void) {
-    if (!SGRAccentColor()) {
-        SGRPickAccent();
-        return;
-    }
     UIViewController *top = SGTopController();
-    UIAlertController *sheet = [UIAlertController alertControllerWithTitle:@"Accent colour" message:nil preferredStyle:UIAlertControllerStyleActionSheet];
-    [sheet addAction:[UIAlertAction actionWithTitle:@"Pick a colour" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) { SGRPickAccent(); }]];
-    [sheet addAction:[UIAlertAction actionWithTitle:@"Spotify's green" style:UIAlertActionStyleDestructive handler:^(UIAlertAction *action) { SGSetInt(SGRKeyAccent, -1); }]];
+    UIAlertController *sheet = [UIAlertController alertControllerWithTitle:@"Accent colour & Themes" message:@"Choose a preset theme or pick a custom colour" preferredStyle:UIAlertControllerStyleActionSheet];
+    [sheet addAction:[UIAlertAction actionWithTitle:@"🟣 Ares Electric Purple" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) { applyAccentHex(0x9D4EDD); }]];
+    [sheet addAction:[UIAlertAction actionWithTitle:@"🔵 Cyberpunk Cyan" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) { applyAccentHex(0x00F0FF); }]];
+    [sheet addAction:[UIAlertAction actionWithTitle:@"🔴 Sunset Crimson" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) { applyAccentHex(0xFF2A6D); }]];
+    [sheet addAction:[UIAlertAction actionWithTitle:@"🟢 Spotify Classic Green" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) { applyAccentHex(0x1DB954); }]];
+    [sheet addAction:[UIAlertAction actionWithTitle:@"🟡 Electric Gold" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) { applyAccentHex(0xFFD700); }]];
+    [sheet addAction:[UIAlertAction actionWithTitle:@"🎨 Pick custom colour..." style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) { SGRPickAccent(); }]];
+    if (SGRAccentColor()) {
+        [sheet addAction:[UIAlertAction actionWithTitle:@"Reset to default" style:UIAlertActionStyleDestructive handler:^(UIAlertAction *action) { SGSetInt(SGRKeyAccent, -1); }]];
+    }
     [sheet addAction:[UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleCancel handler:nil]];
     sheet.popoverPresentationController.sourceView = top.view;
     sheet.popoverPresentationController.sourceRect = CGRectMake(CGRectGetMidX(top.view.bounds), CGRectGetMidY(top.view.bounds), 0, 0);
@@ -23,7 +30,9 @@ static void chooseAccent(void) {
 
 // The redesign's rows of the Appearance card (App/Pages.m). AMOLED has no row: the redesign is always black.
 NSArray<SGModRow *> *SGRAppearanceRows(void) {
+    SGModRow *glassRow = SGOptionRow(@"Liquid Glass effect", @"Disable to use classic frosted blur", SGKeyLiquidGlass);
     return @[
+        SGWithSymbol(glassRow, @"drop.fill"),
         SGWithSymbol(SGStatActionRow(@"Accent colour", nil, ^NSString *{ return SGRAccentLabel(); }, ^{ chooseAccent(); }), @"paintpalette"),
     ];
 }

@@ -5,6 +5,7 @@
 
 #define SGKeyAmoled @"spotifyglass.amoled"
 #define SGKeyAccent @"spotifyglass.accent"   // 0xRRGGBB; unset or negative keeps Spotify's own green
+#define SGKeyNativeGlass @"spotifyglass.native.glass"
 
 UIColor *SGAccentColor(void);   // nil while Spotify's own green is kept
 NSString *SGAccentLabel(void);  // "#RRGGBB", or the name of Spotify's own

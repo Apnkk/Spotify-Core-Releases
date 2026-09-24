@@ -1,13 +1,20 @@
 #import "SGGlass.h"
 #import "SGRuntime.h"
+#import "SGPrefs.h"
 #import <objc/message.h>
+
+BOOL SGLiquidGlassEnabled(void) {
+    return SGFlag(SGKeyLiquidGlass, YES);
+}
 
 // +effectWithStyle: is the only initialiser UIGlassEffect has; a bare -init leaves the material
 // unresolved and the pane renders as a plain blur, while the capsule shape, which is the view's
 // own property, still comes out right. Spotify's own Reprise glass builds its effect the same way.
 UIVisualEffect *SGGlassEffect(void) {
-    Class glass = NSClassFromString(@"UIGlassEffect");
-    if ([glass respondsToSelector:@selector(effectWithStyle:)]) return [glass effectWithStyle:0];
+    if (SGLiquidGlassEnabled()) {
+        Class glass = NSClassFromString(@"UIGlassEffect");
+        if ([glass respondsToSelector:@selector(effectWithStyle:)]) return [glass effectWithStyle:0];
+    }
     return [UIBlurEffect effectWithStyle:UIBlurEffectStyleSystemChromeMaterialDark];
 }
 

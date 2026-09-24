@@ -69,6 +69,15 @@ jobs:
 
           make clean package
 
+      - name: Compute Build Version
+        id: versioning
+        run: |
+          BUILD_NUM="${{ github.run_number }}"
+          VER="0.22.${BUILD_NUM}"
+          echo "$VER" > spoti.pw-main/version.txt
+          echo "tag=v${VER}" >> $GITHUB_OUTPUT
+          echo "version=${VER}" >> $GITHUB_OUTPUT
+
       - name: Build spoti.pw & Combine Tweaks into IPA
         run: |
           EEVEE_DEB="$(pwd)/$(ls EeveeSpotifyReincarnated-Master/packages/*.deb | head -n 1)"
@@ -90,9 +99,16 @@ jobs:
       - name: Release Combined IPA
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: v1.0.0
-          name: "Spotify Eevee + spoti.pw (Modified by Ares)"
-          body: "Combined Spotify IPA featuring EeveeSpotify Premium patch & spoti.pw Liquid Glass UI redesign, modified by Ares."
+          tag_name: ${{ steps.versioning.outputs.tag }}
+          name: "Spotify Core By Ares ${{ steps.versioning.outputs.tag }}"
+          body: |
+            ### Features
+            * Combined Edition: EeveeSpotify Premium + Spotify Core By Ares
+            * Liquid Glass UI (with On/Off toggle) & Native Glass bars option
+            * Dynamic color presets & theme picker
+            * Audio Effects (DSP) & Synchronized Lyrics
+            
+            **Direct Download:** [Spotify_Eevee_SpotiPW_Combined.ipa](https://github.com/${{ github.repository }}/releases/download/${{ steps.versioning.outputs.tag }}/Spotify_Eevee_SpotiPW_Combined.ipa)
           files: out/Spotify_Eevee_SpotiPW_Combined.ipa
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

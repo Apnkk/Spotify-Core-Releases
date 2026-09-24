@@ -1,6 +1,10 @@
 // Glass panes: one UIVisualEffectView per host, kept behind the host's own content.
 #import <UIKit/UIKit.h>
 
+#define SGKeyLiquidGlass @"spotifyglass.liquidglass"
+
+BOOL SGLiquidGlassEnabled(void);
+
 // UIGlassEffect made the only way that resolves its material, or a dark chrome blur before iOS 26.
 UIVisualEffect *SGGlassEffect(void);
 UIVisualEffectView *SGGlassFor(UIView *host, const void *key);
