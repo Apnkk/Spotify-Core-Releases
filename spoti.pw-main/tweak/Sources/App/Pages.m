@@ -49,9 +49,55 @@ static SGModRow *unavailableRow(void) {
     return SGWithSymbol(row, @"sparkles");
 }
 
+static NSString *currentUIStyleName(void) {
+    if (SGRedesignedUIStored()) {
+        return @"🍎 Apple Music";
+    }
+    NSInteger accent = SGInt(SGKeyAccent, -1);
+    if (accent == 0xA238FF) {
+        return @"💜 Deezer Flow";
+    }
+    return @"🟢 Spotify Classic";
+}
+
+static void chooseUIStyle(void) {
+    UIViewController *top = SGTopController();
+    UIAlertController *sheet = [UIAlertController alertControllerWithTitle:@"Interface Style" message:@"Select your preferred streaming music interface" preferredStyle:UIAlertControllerStyleActionSheet];
+    
+    [sheet addAction:[UIAlertAction actionWithTitle:@"🍎 Apple Music (Floating Glass & Sing)" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
+        SGSetRedesignedUI(YES);
+        SGSetInt(SGRKeyAccent, 0xFA243C);
+        offerRestart(YES);
+    }]];
+    
+    [sheet addAction:[UIAlertAction actionWithTitle:@"💜 Deezer Flow (Neon Violet & Glass)" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
+        SGSetRedesignedUI(NO);
+        SGSetInt(SGKeyAccent, 0xA238FF);
+        SGSetEnabled(SGKeyNativeGlass, YES);
+        SGSetEnabled(SGKeyAmoled, YES);
+        offerRestart(NO);
+    }]];
+
+    [sheet addAction:[UIAlertAction actionWithTitle:@"🟢 Spotify Classic (Original Docked UI)" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
+        SGSetRedesignedUI(NO);
+        SGSetInt(SGKeyAccent, 0x1DB954);
+        offerRestart(NO);
+    }]];
+
+    [sheet addAction:[UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleCancel handler:nil]];
+    sheet.popoverPresentationController.sourceView = top.view;
+    sheet.popoverPresentationController.sourceRect = CGRectMake(CGRectGetMidX(top.view.bounds), CGRectGetMidY(top.view.bounds), 0, 0);
+    sheet.popoverPresentationController.permittedArrowDirections = 0;
+    [top presentViewController:sheet animated:YES completion:nil];
+}
+
 SGModSection *SGAppearanceSection(void) {
+    NSMutableArray<SGModRow *> *rows = [NSMutableArray array];
+    SGModRow *styleRow = SGStatActionRow(@"UI Style", nil, ^NSString *{ return currentUIStyleName(); }, ^{ chooseUIStyle(); });
+    [rows addObject:SGWithSymbol(styleRow, @"sparkles")];
+
     if (!SGRedesignAvailable()) {
-        NSMutableArray<SGModRow *> *rows = [NSMutableArray arrayWithObject:unavailableRow()];
+        [rows addObject:unavailableRow()];
         [rows addObjectsFromArray:SGNativeAppearanceRows()];
         [rows addObject:SGAppIconRow()];
         return SGNotedSection(@"Appearance", rows, @"Changes apply after you restart Spotify.");
@@ -63,7 +109,7 @@ SGModSection *SGAppearanceSection(void) {
         SGSetRedesignedUI(on);
         offerRestart(on);
     };
-    NSMutableArray<SGModRow *> *rows = [NSMutableArray arrayWithObject:SGWithSymbol(redesign, @"sparkles")];
+    [rows addObject:SGWithSymbol(redesign, @"slider.horizontal.below.rectangle")];
     [rows addObjectsFromArray:SGRedesignedUIStored() ? SGRAppearanceRows() : SGNativeAppearanceRows()];
     [rows addObject:SGAppIconRow()];
     return SGNotedSection(@"Appearance", rows, @"Changes apply after you restart Spotify.");
