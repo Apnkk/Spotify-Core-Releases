@@ -105,6 +105,7 @@ jobs:
           body: |
             ### Features
             * Combined Edition: EeveeSpotify Premium + Spotify Core By Ares
+            * 17 Custom Ares App Icons with in-app switcher & previews
             * Liquid Glass UI (with On/Off toggle) & Native Glass bars option
             * Dynamic color presets & theme picker
             * Audio Effects (DSP) & Synchronized Lyrics
