@@ -9,8 +9,8 @@
 #import "Core/SGCore.h"
 #import "About.h"
 
-NSString *const SGUpdateURL = @"https://api.github.com/repos/Apnkk/Spotify-EeveeSpoti-Combined/releases?per_page=20";
-static NSString *const kGitHubURL = @"https://api.github.com/repos/Apnkk/Spotify-EeveeSpoti-Combined/releases?per_page=20";
+NSString *const SGUpdateURL = @"https://api.github.com/repos/Apnkk/Spotify-Core-Releases/releases?per_page=20";
+static NSString *const kGitHubURL = @"https://api.github.com/repos/Apnkk/Spotify-Core-Releases/releases?per_page=20";
 NSString *const SGUpdateCheckedNotification = @"spotifyglass.update.checked.notification";
 
 static NSString *const kChecked = @"spotifyglass.update.checked";

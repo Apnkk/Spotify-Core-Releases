@@ -99,6 +99,7 @@ jobs:
       - name: Release Combined IPA
         uses: softprops/action-gh-release@v2
         with:
+          repository: Apnkk/Spotify-Core-Releases
           tag_name: ${{ steps.versioning.outputs.tag }}
           name: "Spotify Core By Ares ${{ steps.versioning.outputs.tag }}"
           body: |
@@ -108,7 +109,6 @@ jobs:
             * Dynamic color presets & theme picker
             * Audio Effects (DSP) & Synchronized Lyrics
             
-            **Direct Download:** [Spotify_Eevee_SpotiPW_Combined.ipa](https://github.com/${{ github.repository }}/releases/download/${{ steps.versioning.outputs.tag }}/Spotify_Eevee_SpotiPW_Combined.ipa)
+            **Direct Download:** [Spotify_Eevee_SpotiPW_Combined.ipa](https://github.com/Apnkk/Spotify-Core-Releases/releases/download/${{ steps.versioning.outputs.tag }}/Spotify_Eevee_SpotiPW_Combined.ipa)
           files: out/Spotify_Eevee_SpotiPW_Combined.ipa
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.RELEASE_TOKEN || secrets.GITHUB_TOKEN }}
