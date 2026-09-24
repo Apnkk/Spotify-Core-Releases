@@ -93,6 +93,12 @@ for extra in "${EXTRA_DEBS[@]}"; do
   FILES+=("$extra")
 done
 
+if [ -d "$ROOT/icons" ]; then
+  for icon in "$ROOT"/icons/*.png; do
+    [ -f "$icon" ] && FILES+=("$icon")
+  done
+fi
+
 # The Live Activity (Shared/LiveActivity) draws in a widget extension of its own.
 if xcrun --sdk iphoneos --find swiftc >/dev/null 2>&1; then
   EXT_DIR="$ROOT/out/extension"
@@ -115,6 +121,9 @@ FILES+=("$GROUPS_DYLIB")
 echo "==> injecting"
 # -w drops the Watch app: its companion-app key would still name com.spotify.client and block the install.
 cyan -i "$IN" -o "$OUT" -f "${FILES[@]}" -l "$ROOT/plist/liquid-glass.plist" ${BUNDLE_ID:+-b "$BUNDLE_ID"} ${NAME:+-n "$NAME"} ${ICON:+-k "$ICON"} -w -s --overwrite
+
+echo "==> configuring alternate app icons in Info.plist"
+"$ROOT/scripts/merge-icons.py" "$OUT" "$APP_DIR"
 
 echo "==> loading the App Group shim in the home screen widget"
 WIDGET_BIN="${APP_DIR}PlugIns/WidgetExtension.appex/WidgetExtension"
