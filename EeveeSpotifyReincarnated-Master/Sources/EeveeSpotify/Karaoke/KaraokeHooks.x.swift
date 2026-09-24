@@ -164,10 +164,4 @@ func activateKaraokeHooks() {
         karaokeDumpClassMethods("PlayerService(\(resolvedName ?? "?"))", ofClass: resolvedClass)
     }
 
-    // Just referencing .shared is enough to trigger KaraokeButtonOverlay's
-    // lazy init, which kicks off its own Now-Playing-visibility polling
-    // timer — there's no other natural one-time startup hook for it here.
-    if #available(iOS 15.0, *) {
-        _ = KaraokeButtonOverlay.shared
-    }
 }

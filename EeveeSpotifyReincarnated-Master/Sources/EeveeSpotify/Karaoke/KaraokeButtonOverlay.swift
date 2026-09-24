@@ -76,32 +76,11 @@ final class KaraokeButtonOverlay {
     private var isOnNativeLyricsScreen = false
 
     private init() {
-        // Timer setup needs the main run loop; init() can in principle be
-        // triggered from any thread the first time .shared is touched, so
-        // hop to main rather than assuming the caller already is.
-        DispatchQueue.main.async { [weak self] in
-            self?.startPolling()
-        }
+        // Disabled: floating Word-Synced button overlay removed per user request
     }
 
     private func startPolling() {
-        pollTimer?.invalidate()
-        // Was 0.5s; a noticeable delay was reported between minimizing Now
-        // Playing on iPhone and the button actually disappearing. This walk
-        // is a bounded, shallow view-controller/view-hierarchy traversal —
-        // cheap enough to afford running well more often than that — so
-        // this trades a bit more CPU time for a much shorter worst-case
-        // delay on any of this class's poll-driven visibility changes, not
-        // just the iPhone-minimize one specifically.
-        let timer = Timer(timeInterval: 0.15, repeats: true) { [weak self] _ in
-            self?.refresh()
-        }
-        // .common (not .default) so this keeps firing even while the user
-        // is mid-scroll/mid-drag elsewhere in the app, since UIScrollView
-        // tracking normally pauses .default-mode timers.
-        RunLoop.main.add(timer, forMode: .common)
-        pollTimer = timer
-        refresh()
+        // Disabled
     }
 
     /// Called by KaraokeButtonOverlayLyricsScreenHook's viewDidAppear.
@@ -808,33 +787,7 @@ final class KaraokeButtonOverlay {
     }
 
     private func ensureWindowExists(liveVC: UIViewController?) {
-        guard window == nil else { return }
-        guard let scene = KaraokeButtonOverlay.resolvedScene(liveVC: liveVC) else { return }
-
-        let frame = idealFrame(in: scene)
-        lastSceneBoundsSize = scene.coordinateSpace.bounds.size
-
-        let overlayWindow = UIWindow(windowScene: scene)
-        overlayWindow.frame = frame
-        // Screen-visibility gating (isNowPlayingScreenCurrentlyVisible) already
-        // limits *when* this shows to the Now Playing screen. This level
-        // controls *stacking*, separately: .alert - 1 (the previous value)
-        // sits just below system alerts — meaning above sheets, toasts,
-        // snackbars, the volume HUD, and any other transient UI Spotify
-        // shows while the user is still on the Now Playing screen, which is
-        // what "overlays over everything" actually referred to (visibility
-        // timing was never the only problem). .normal + 1 sits just above
-        // the app's own main content but still below all of that.
-        overlayWindow.windowLevel = .normal + 1
-        overlayWindow.backgroundColor = .clear
-        overlayWindow.isHidden = true // refresh() unhides it when appropriate
-
-        let hosting = UIHostingController(rootView: KaraokeButtonOverlayView())
-        hosting.view.backgroundColor = .clear
-        overlayWindow.rootViewController = hosting
-
-        window = overlayWindow
-        restFrame = frame
+        return
     }
 }
 
