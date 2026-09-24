@@ -126,6 +126,8 @@ jobs:
           cat <<EOF > feather.json
           {
             "name": "Spotify Core By Ares",
+            "identifier": "com.ares.spotifycore",
+            "sourceURL": "https://raw.githubusercontent.com/Apnkk/Spotify-Core-Releases/main/feather.json",
             "subtitle": "EeveeSpotify Premium + Liquid Glass",
             "description": "Spotify Core By Ares official releases repository for Feather and AltStore.",
             "iconURL": "https://raw.githubusercontent.com/Apnkk/Spotify-Core-Releases/main/assets/ares_logo.png",
@@ -135,6 +137,7 @@ jobs:
                 "name": "Spotify Core",
                 "bundleIdentifier": "com.spotify.client",
                 "developerName": "Ares",
+                "subtitle": "EeveeSpotify Premium + Liquid Glass",
                 "version": "${TAG#v}",
                 "versionDate": "${NOW}",
                 "versionDescription": "Release ${TAG}: EeveeSpotify + Spotify Core By Ares Combined",
@@ -142,14 +145,26 @@ jobs:
                 "localizedDescription": "EeveeSpotify Premium features fused with the revolutionary Liquid Glass interface, custom Ares themes, alternate icons, and audio DSP.",
                 "iconURL": "https://raw.githubusercontent.com/Apnkk/Spotify-Core-Releases/main/assets/ares_logo.png",
                 "tintColor": "1DB954",
-                "size": ${IPA_SIZE}
+                "size": ${IPA_SIZE},
+                "versions": [
+                  {
+                    "version": "${TAG#v}",
+                    "date": "${NOW}",
+                    "localizedDescription": "Release ${TAG}: EeveeSpotify + Spotify Core By Ares Combined",
+                    "downloadURL": "https://github.com/Apnkk/Spotify-Core-Releases/releases/download/${TAG}/Spotify_Eevee_SpotiPW_Combined.ipa",
+                    "size": ${IPA_SIZE}
+                  }
+                ]
               }
             ]
           }
           EOF
 
+          cp feather.json apps.json
+          cp feather.json altstore.json
+
           git config user.name "Apnkk"
           git config user.email "apnkk@users.noreply.github.com"
-          git add feather.json
-          git commit -m "chore: update feather.json to ${TAG}" || true
+          git add feather.json apps.json altstore.json
+          git commit -m "chore: update manifests to ${TAG}" || true
           git push origin main || true
