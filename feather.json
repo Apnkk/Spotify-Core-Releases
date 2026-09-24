@@ -1,0 +1,22 @@
+{
+    "subtitle":  "EeveeSpotify Premium + Liquid Glass",
+    "name":  "Spotify Core By Ares",
+    "description":  "Spotify Core By Ares official releases repository for Feather and AltStore.",
+    "website":  "https://aress.ovh",
+    "apps":  [
+                 {
+                     "downloadURL":  "https://github.com/Apnkk/Spotify-Core-Releases/releases/download/v0.22.25/Spotify_Eevee_SpotiPW_Combined.ipa",
+                     "developerName":  "Ares",
+                     "size":  136173000,
+                     "version":  "0.22.25",
+                     "bundleIdentifier":  "com.spotify.client",
+                     "name":  "Spotify Core",
+                     "versionDescription":  "• Removed Word-Synced overlay button\n• Clarified Liquid Glass mode\n• 17 custom icons \u0026 Discord card",
+                     "localizedDescription":  "EeveeSpotify Premium features fused with the revolutionary Liquid Glass interface, custom Ares themes, alternate icons, and audio DSP.",
+                     "tintColor":  "1DB954",
+                     "iconURL":  "https://raw.githubusercontent.com/Apnkk/Spotify-Core-Releases/main/assets/ares_logo.png",
+                     "versionDate":  "2026-09-24T20:09:19Z"
+                 }
+             ],
+    "iconURL":  "https://raw.githubusercontent.com/Apnkk/Spotify-Core-Releases/main/assets/ares_logo.png"
+}
