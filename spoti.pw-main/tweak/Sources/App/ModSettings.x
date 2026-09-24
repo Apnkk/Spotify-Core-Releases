@@ -22,6 +22,7 @@
 #import "Shared/AudioEffects/AudioEffectsPage.h"
 #import "Shared/LiveActivity/LiveActivity.h"
 #import "App/About/About.h"
+#import "App/About/CreatorDiscord.h"
 #import "App/Donate/Donate.h"
 #import "Pages.h"
 
@@ -71,7 +72,7 @@ static UIViewController *modSettingsPage(void) {
             mod,
         ]),
     ]];
-    return [[SGModPage alloc] initWithTitle:@"Spotify Core By Ares" intro:nil sections:sections footer:@"Modified by Ares — EeveeSpotify & spoti.pw Combined Edition"];
+    return [[SGModPage alloc] initWithTitle:@"Spotify Core By Ares" intro:nil sections:sections footerView:SGCreatorFooter(@"Modified by Ares — EeveeSpotify & spoti.pw Combined Edition")];
 }
 
 #pragma mark - row in the settings list and the side drawer

@@ -413,21 +413,29 @@ static const CGFloat kSliderTop = 12, kSliderLine = 18, kSliderSubtitle = 14, kS
     NSArray<NSArray<SGModRow *> *> *_shown;   // each section's rows that show now (SGModRow.visible)
     UIView *_intro;
     UIView *_footer;
+    BOOL _isCustomFooter;
     NSTimer *_ticker;
     BOOL _live;
 }
 
-- (instancetype)initWithTitle:(NSString *)title intro:(NSString *)intro sections:(NSArray<SGModSection *> *)sections footer:(NSString *)footer {
+- (instancetype)initWithTitle:(NSString *)title intro:(NSString *)intro sections:(NSArray<SGModSection *> *)sections footerView:(UIView *)footerView {
     if (!(self = [super initWithStyle:UITableViewStyleInsetGrouped])) return nil;
     self.title = title;
     _sections = sections;
     _shown = [self rowsToShow];
     _intro = intro ? SGNote(intro) : nil;
-    _footer = footer ? SGNote(footer) : nil;
+    _footer = footerView;
+    _isCustomFooter = (footerView != nil);
     // A page row reads its value out when the page appears rather than on the ticker, so only the
     // rows whose numbers climb on their own keep one running.
     for (SGModSection *s in sections) for (SGModRow *row in s.rows) _live |= row.value && !row.page;
     return self;
+}
+
+- (instancetype)initWithTitle:(NSString *)title intro:(NSString *)intro sections:(NSArray<SGModSection *> *)sections footer:(NSString *)footer {
+    SGModPage *page = [self initWithTitle:title intro:intro sections:sections footerView:footer ? SGNote(footer) : nil];
+    if (page) page->_isCustomFooter = NO;
+    return page;
 }
 
 - (NSArray<NSArray<SGModRow *> *> *)rowsToShow {
@@ -491,7 +499,20 @@ static const CGFloat kSliderTop = 12, kSliderLine = 18, kSliderSubtitle = 14, kS
 - (void)viewWillLayoutSubviews {
     [super viewWillLayoutSubviews];
     if (_intro) SGFitNote(self.tableView, _intro, 24, 0);
-    if (_footer) SGFitNote(self.tableView, _footer, 16, 24);
+    if (_footer) {
+        if (_isCustomFooter) {
+            CGFloat width = self.tableView.bounds.size.width;
+            CGSize size = [_footer sizeThatFits:CGSizeMake(width, CGFLOAT_MAX)];
+            CGFloat h = size.height > 0 ? size.height : _footer.bounds.size.height;
+            CGRect f = CGRectMake(0, 0, width, h);
+            if (!CGRectEqualToRect(_footer.frame, f)) {
+                _footer.frame = f;
+                self.tableView.tableFooterView = _footer;
+            }
+        } else {
+            SGFitNote(self.tableView, _footer, 16, 24);
+        }
+    }
 }
 
 - (void)viewDidLayoutSubviews {
@@ -505,6 +526,9 @@ static const CGFloat kSliderTop = 12, kSliderLine = 18, kSliderSubtitle = 14, kS
     // page it opened, which is gone by the time this one comes back, and may bring rows or take them.
     _shown = [self rowsToShow];
     [self.tableView reloadData];
+    if ([_footer respondsToSelector:@selector(refreshLive)]) {
+        [((id)_footer) performSelector:@selector(refreshLive)];
+    }
     if (!_live) return;
     // The counters climb while the page is open; the labels are written straight into the cells so
     // that a reload never lands under a switch being dragged. A cancelled back swipe appears the

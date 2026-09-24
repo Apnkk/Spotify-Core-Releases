@@ -49,6 +49,7 @@
 
 @interface SGModPage : SGPage
 - (instancetype)initWithTitle:(NSString *)title intro:(NSString *)intro sections:(NSArray<SGModSection *> *)sections footer:(NSString *)footer;
+- (instancetype)initWithTitle:(NSString *)title intro:(NSString *)intro sections:(NSArray<SGModSection *> *)sections footerView:(UIView *)footerView;
 @end
 
 // The intro of every page whose switches the hooks read at launch.
