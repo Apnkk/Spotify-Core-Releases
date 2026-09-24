@@ -11,25 +11,9 @@ enum Donation {
     private static let donationURL = URL(string: "https://ko-fi.com/jaydenjcpy")!
     private static let showOnLaunches: Set<Int> = [5, 10]
 
-    /// Call once at tweak init. Increments the launch counter and
-    /// shows the toast on the 5th and 10th launches.
+    /// Disabled: completely silenced, no donation prompts or toasts
     static func activate() {
-        guard !UserDefaults.standard.bool(forKey: hasShownKey) else { return }
-
-        let count = UserDefaults.standard.integer(forKey: launchCountKey) + 1
-        UserDefaults.standard.set(count, forKey: launchCountKey)
-
-        guard showOnLaunches.contains(count) else { return }
-
-        // Mark as shown after the final appearance (10th launch)
-        if count == 10 {
-            UserDefaults.standard.set(true, forKey: hasShownKey)
-        }
-
-        // Delay slightly so the UI has time to settle after launch
-        DispatchQueue.main.asyncAfter(deadline: .now() + 3.0) {
-            showToast()
-        }
+        return
     }
 
     private static func showToast() {
