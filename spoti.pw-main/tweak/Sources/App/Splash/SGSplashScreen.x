@@ -46,6 +46,8 @@ static SGSplashOverlayView *gSplashOverlay = nil;
 static BOOL gSplashShown = NO;
 static BOOL gSplashDismissed = NO;
 
+void SGDismissSplash(void);
+
 void SGShowSplashIfNeeded(UIWindow *window) {
     if (gSplashShown || !window) return;
     gSplashShown = YES;
@@ -108,11 +110,16 @@ static void replaceLogosInView(UIView *view, UIImage *logo) {
 
 - (void)makeKeyAndVisible {
     %orig;
-    if (!gSplashShown) {
-        NSString *cls = NSStringFromClass(self.class);
-        if ([cls containsString:@"MainWindow"] || [cls containsString:@"SPT"] || self == [UIApplication sharedApplication].windows.firstObject) {
-            SGShowSplashIfNeeded(self);
-        }
+
+    if (gSplashShown) {
+        return;
+    }
+
+    NSString *cls = NSStringFromClass(self.class);
+    if ([cls containsString:@"MainWindow"] ||
+        [cls containsString:@"SPT"] ||
+        self.isKeyWindow) {
+        SGShowSplashIfNeeded(self);
     }
 }
 
