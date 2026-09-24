@@ -106,10 +106,50 @@ jobs:
             ### Features
             * Combined Edition: EeveeSpotify Premium + Spotify Core By Ares
             * 17 Custom Ares App Icons with in-app switcher & previews
-            * Liquid Glass UI (with On/Off toggle) & Native Glass bars option
+            * Liquid Glass UI (with On/Off toggle)
             * Dynamic color presets & theme picker
             * Audio Effects (DSP) & Synchronized Lyrics
             
             **Direct Download:** [Spotify_Eevee_SpotiPW_Combined.ipa](https://github.com/Apnkk/Spotify-Core-Releases/releases/download/${{ steps.versioning.outputs.tag }}/Spotify_Eevee_SpotiPW_Combined.ipa)
           files: out/Spotify_Eevee_SpotiPW_Combined.ipa
           token: ${{ secrets.RELEASE_TOKEN || secrets.GITHUB_TOKEN }}
+
+      - name: Update Feather and AltStore Source
+        run: |
+          TAG="${{ steps.versioning.outputs.tag }}"
+          NOW=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+          IPA_SIZE=$(stat -f%z out/Spotify_Eevee_SpotiPW_Combined.ipa 2>/dev/null || stat -c%s out/Spotify_Eevee_SpotiPW_Combined.ipa 2>/dev/null || echo 136000000)
+
+          git clone "https://x-access-token:${{ secrets.RELEASE_TOKEN || secrets.GITHUB_TOKEN }}@github.com/Apnkk/Spotify-Core-Releases.git" releases_repo
+          cd releases_repo
+
+          cat <<EOF > feather.json
+          {
+            "name": "Spotify Core By Ares",
+            "subtitle": "EeveeSpotify Premium + Liquid Glass",
+            "description": "Spotify Core By Ares official releases repository for Feather and AltStore.",
+            "iconURL": "https://raw.githubusercontent.com/Apnkk/Spotify-Core-Releases/main/assets/ares_logo.png",
+            "website": "https://aress.ovh",
+            "apps": [
+              {
+                "name": "Spotify Core",
+                "bundleIdentifier": "com.spotify.client",
+                "developerName": "Ares",
+                "version": "${TAG#v}",
+                "versionDate": "${NOW}",
+                "versionDescription": "Release ${TAG}: EeveeSpotify + Spotify Core By Ares Combined",
+                "downloadURL": "https://github.com/Apnkk/Spotify-Core-Releases/releases/download/${TAG}/Spotify_Eevee_SpotiPW_Combined.ipa",
+                "localizedDescription": "EeveeSpotify Premium features fused with the revolutionary Liquid Glass interface, custom Ares themes, alternate icons, and audio DSP.",
+                "iconURL": "https://raw.githubusercontent.com/Apnkk/Spotify-Core-Releases/main/assets/ares_logo.png",
+                "tintColor": "1DB954",
+                "size": ${IPA_SIZE}
+              }
+            ]
+          }
+          EOF
+
+          git config user.name "Apnkk"
+          git config user.email "apnkk@users.noreply.github.com"
+          git add feather.json
+          git commit -m "chore: update feather.json to ${TAG}" || true
+          git push origin main || true
