@@ -1,8 +1,4 @@
 #import <UIKit/UIKit.h>
+#import "Settings/SGModPage.h"
 
-@interface SGCreatorFooterView : UIView
-- (instancetype)initWithFooterNote:(NSString *)footerNote;
-- (void)refreshLive;
-@end
-
-UIView *SGCreatorFooter(NSString *footerNote);
+SGModSection *SGCreatorSection(void);

@@ -22,6 +22,9 @@
 @property (nonatomic, copy) void (^changed)(BOOL on);   // after the switch is stored; the page reloads
 @property (nonatomic, strong) UIColor *color;   // title, subtitle and symbol, for a warning row
 @property (nonatomic, copy) NSString *symbol;
+@property (nonatomic, strong) UIImage *image;
+@property (nonatomic) BOOL circularImage;
+@property (nonatomic, strong) UIView *accessory;
 // A switch row that changes the whole app draws SGGlowSwitch instead of a UISwitch.
 @property (nonatomic) BOOL glows;
 // An ⓘ button beside the row's switch, whose tap reads this out under the row's title.
@@ -49,7 +52,6 @@
 
 @interface SGModPage : SGPage
 - (instancetype)initWithTitle:(NSString *)title intro:(NSString *)intro sections:(NSArray<SGModSection *> *)sections footer:(NSString *)footer;
-- (instancetype)initWithTitle:(NSString *)title intro:(NSString *)intro sections:(NSArray<SGModSection *> *)sections footerView:(UIView *)footerView;
 @end
 
 // The intro of every page whose switches the hooks read at launch.

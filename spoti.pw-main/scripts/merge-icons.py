@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Ensures CFBundleIcons and CFBundleIcons~ipad in Info.plist include all alternate icons."""
+"""Ensures CFBundleIcons and CFBundleIcons~ipad preserve CFBundlePrimaryIcon and include all alternate icons."""
 import os
 import plistlib
 import subprocess
@@ -23,10 +23,20 @@ with zipfile.ZipFile(ipa, 'r') as z:
 
 plist = plistlib.loads(raw_data)
 
-# Ensure CFBundleIcons and CFBundleIcons~ipad exist
+# Ensure CFBundleIcons and CFBundleIcons~ipad exist and preserve primary icon
 for key in ["CFBundleIcons", "CFBundleIcons~ipad"]:
     if key not in plist or not isinstance(plist[key], dict):
         plist[key] = {}
+
+    # Crucial: NEVER erase or lose CFBundlePrimaryIcon!
+    if "CFBundlePrimaryIcon" not in plist[key] or not isinstance(plist[key]["CFBundlePrimaryIcon"], dict):
+        icon_files = ["AppIcon60x60"] if key == "CFBundleIcons" else ["AppIcon60x60", "AppIcon76x76"]
+        plist[key]["CFBundlePrimaryIcon"] = {
+            "CFBundleIconFiles": icon_files,
+            "CFBundleIconName": "AppIcon"
+        }
+
+    # Add alternate icons
     if "CFBundleAlternateIcons" not in plist[key] or not isinstance(plist[key]["CFBundleAlternateIcons"], dict):
         plist[key]["CFBundleAlternateIcons"] = {}
 
@@ -46,4 +56,4 @@ with tempfile.TemporaryDirectory() as tmp:
         plistlib.dump(plist, f)
     subprocess.run(["zip", "-q", os.path.abspath(ipa), plist_path], cwd=tmp, check=True)
 
-print(f"    Injected 17 alternate icons into {plist_path}")
+print(f"    Injected 17 alternate icons while preserving primary icon in {plist_path}")

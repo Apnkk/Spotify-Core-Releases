@@ -6,15 +6,8 @@
 static NSString *const kSGAppIconKey = @"spotifyglass.appicon";
 
 static NSInteger SGCurrentAppIconIndex(void) {
-    NSInteger stored = SGInt(kSGAppIconKey, -1);
+    NSInteger stored = SGInt(kSGAppIconKey, 0);
     if (stored >= 0 && stored <= 17) return stored;
-    if ([[UIApplication sharedApplication] respondsToSelector:@selector(alternateIconName)]) {
-        NSString *alt = [UIApplication sharedApplication].alternateIconName;
-        if (alt && [alt hasPrefix:@"spotify_logo_"]) {
-            NSInteger idx = [alt substringFromIndex:@"spotify_logo_".length].integerValue;
-            if (idx >= 1 && idx <= 17) return idx;
-        }
-    }
     return 0;
 }
 

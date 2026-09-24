@@ -71,8 +71,9 @@ static UIViewController *modSettingsPage(void) {
             pageRow(@"All flags", @"flag", ^UIViewController *{ return SGAllFlagsPage(); }),
             mod,
         ]),
+        SGCreatorSection(),
     ]];
-    return [[SGModPage alloc] initWithTitle:@"Spotify Core By Ares" intro:nil sections:sections footerView:SGCreatorFooter(@"Modified by Ares — EeveeSpotify & spoti.pw Combined Edition")];
+    return [[SGModPage alloc] initWithTitle:@"Spotify Core By Ares" intro:nil sections:sections footer:@"Modified by Ares — EeveeSpotify & spoti.pw Combined Edition"];
 }
 
 #pragma mark - row in the settings list and the side drawer
