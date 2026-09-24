@@ -25,12 +25,33 @@ static void hideConnectButton(UIView *bar) {
 static char kNativeNPBGlassKey;
 
 static void applyNativeNPBGlass(UIView *view) {
-    if (!view || !SGFlag(@"spotifyglass.native.glass", NO)) return;
+    if (!view || !SGFlag(@"spotifyglass.native.glass", YES)) return;
     view.backgroundColor = UIColor.clearColor;
+    view.layer.backgroundColor = NULL;
+
+    // Clear background colors on child subviews so the glass material shines through,
+    // preserving labels, buttons, image views and the progress bar.
+    SGForEachView(view, ^(UIView *v) {
+        if ([v isKindOfClass:UIVisualEffectView.class]) return;
+        if ([v isKindOfClass:UIControl.class] || [v isKindOfClass:UIImageView.class] || [v isKindOfClass:UILabel.class]) return;
+        if (v.bounds.size.height <= 3) return; // keep progress indicator
+        v.backgroundColor = UIColor.clearColor;
+        v.layer.backgroundColor = NULL;
+    });
+
     UIVisualEffectView *glass = SGGlassFor(view, &kNativeNPBGlassKey);
     if (glass) {
         glass.frame = view.bounds;
         glass.layer.zPosition = -1;
+        glass.layer.cornerRadius = 10;
+        glass.layer.cornerCurve = kCACornerCurveContinuous;
+        glass.clipsToBounds = YES;
+        if (glass.overrideUserInterfaceStyle != UIUserInterfaceStyleDark) {
+            glass.overrideUserInterfaceStyle = UIUserInterfaceStyleDark;
+        }
+        view.layer.cornerRadius = 10;
+        view.layer.cornerCurve = kCACornerCurveContinuous;
+        view.clipsToBounds = YES;
     }
 }
 
@@ -45,7 +66,6 @@ static void applyNativeNPBGlass(UIView *view) {
 
 %ctor {
     if (!SGNativeUI()) return;
-    if (!SGHidden(SGHideBarConnect) && !SGFlag(@"spotifyglass.native.glass", NO)) return;
     %init;
     SGRequireClasses(@[@"_TtC18NowPlaying_BarImpl27NowPlayingBarViewController"]);
 }

@@ -35,17 +35,32 @@ static UIView *tabBarOf(UIView *item) {
 static char kNativeTabBarGlassKey;
 
 static void applyNativeTabBarGlass(UIView *bar) {
-    if (!bar || !SGFlag(@"spotifyglass.native.glass", NO)) return;
+    if (!bar || !SGFlag(@"spotifyglass.native.glass", YES)) return;
     bar.backgroundColor = UIColor.clearColor;
+    bar.layer.backgroundColor = NULL;
+    if (bar.superview) {
+        bar.superview.backgroundColor = UIColor.clearColor;
+        bar.superview.layer.backgroundColor = NULL;
+    }
     for (UIView *sub in bar.subviews) {
-        if ([NSStringFromClass(sub.class) containsString:@"TabBarCompactView"]) {
-            sub.backgroundColor = UIColor.clearColor;
+        if ([sub isKindOfClass:UIVisualEffectView.class]) continue;
+        sub.backgroundColor = UIColor.clearColor;
+        sub.layer.backgroundColor = NULL;
+        for (UIView *inner in sub.subviews) {
+            if ([inner isKindOfClass:UIVisualEffectView.class]) continue;
+            if (![inner isKindOfClass:UIControl.class] && ![inner isKindOfClass:UIImageView.class] && ![inner isKindOfClass:UILabel.class]) {
+                inner.backgroundColor = UIColor.clearColor;
+                inner.layer.backgroundColor = NULL;
+            }
         }
     }
     UIVisualEffectView *glass = SGGlassFor(bar, &kNativeTabBarGlassKey);
     if (glass) {
         glass.frame = bar.bounds;
         glass.layer.zPosition = -1;
+        if (glass.overrideUserInterfaceStyle != UIUserInterfaceStyleDark) {
+            glass.overrideUserInterfaceStyle = UIUserInterfaceStyleDark;
+        }
     }
 }
 

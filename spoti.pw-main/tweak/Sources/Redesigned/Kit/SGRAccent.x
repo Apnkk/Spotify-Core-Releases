@@ -39,7 +39,15 @@ UIColor *SGRAccentColor(void) {
 
 NSString *SGRAccentLabel(void) {
     NSInteger rgb = chosen();
-    return rgb < 0 ? @"Spotify green" : [NSString stringWithFormat:@"#%06lX", (long)rgb];
+    if (rgb < 0) return @"Spotify green";
+    if (rgb == 0x9D4EDD) return @"Ares Purple";
+    if (rgb == 0xA238FF) return @"Deezer Purple";
+    if (rgb == 0xFA243C) return @"Apple Music Red";
+    if (rgb == 0x00F0FF) return @"Cyberpunk Cyan";
+    if (rgb == 0xFF2A6D) return @"Sunset Crimson";
+    if (rgb == 0x1DB954) return @"Spotify Green";
+    if (rgb == 0xFFD700) return @"Electric Gold";
+    return [NSString stringWithFormat:@"#%06lX", (long)rgb];
 }
 
 #pragma mark - picker
