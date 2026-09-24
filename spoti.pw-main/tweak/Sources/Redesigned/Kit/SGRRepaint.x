@@ -34,6 +34,6 @@ __weak UIView *sgr_artistRoot = nil;
 %end
 
 %ctor {
-    if (!SGRedesignedUI()) return;
+    if (!SGRedesignedUI() && !SGFlag(@"spotifyglass.native.glass", NO)) return;
     %init;
 }

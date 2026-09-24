@@ -32,29 +32,11 @@ static UIView *tabBarOf(UIView *item) {
     return nil;
 }
 
-static char kNativeTabBarGlassKey;
-
-static void applyNativeTabBarGlass(UIView *bar) {
-    if (!bar || !SGFlag(@"spotifyglass.native.glass", NO)) return;
-    bar.backgroundColor = UIColor.clearColor;
-    for (UIView *sub in bar.subviews) {
-        if ([NSStringFromClass(sub.class) containsString:@"TabBarCompactView"]) {
-            sub.backgroundColor = UIColor.clearColor;
-        }
-    }
-    UIVisualEffectView *glass = SGGlassFor(bar, &kNativeTabBarGlassKey);
-    if (glass) {
-        glass.frame = bar.bounds;
-        glass.layer.zPosition = -1;
-    }
-}
-
 %hook _TtC23NavigationUI_TabBarImpl10TabBarView
 - (void)layoutSubviews {
     %orig;
     SGComposeTabBar((UIView *)self);
     holdHome((UIView *)self);
-    applyNativeTabBarGlass((UIView *)self);
     SGLogTabBarRow((UIView *)self);
 }
 %end

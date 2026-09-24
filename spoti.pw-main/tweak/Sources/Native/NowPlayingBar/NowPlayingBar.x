@@ -22,30 +22,17 @@ static void hideConnectButton(UIView *bar) {
     });
 }
 
-static char kNativeNPBGlassKey;
-
-static void applyNativeNPBGlass(UIView *view) {
-    if (!view || !SGFlag(@"spotifyglass.native.glass", NO)) return;
-    view.backgroundColor = UIColor.clearColor;
-    UIVisualEffectView *glass = SGGlassFor(view, &kNativeNPBGlassKey);
-    if (glass) {
-        glass.frame = view.bounds;
-        glass.layer.zPosition = -1;
-    }
-}
-
 %hook _TtC18NowPlaying_BarImpl27NowPlayingBarViewController
 - (void)viewDidLayoutSubviews {
     %orig;
     UIView *view = ((UIViewController *)self).view;
     if (SGHidden(SGHideBarConnect)) hideConnectButton(view);
-    applyNativeNPBGlass(view);
 }
 %end
 
 %ctor {
     if (!SGNativeUI()) return;
-    if (!SGHidden(SGHideBarConnect) && !SGFlag(@"spotifyglass.native.glass", NO)) return;
+    if (!SGHidden(SGHideBarConnect)) return;
     %init;
     SGRequireClasses(@[@"_TtC18NowPlaying_BarImpl27NowPlayingBarViewController"]);
 }

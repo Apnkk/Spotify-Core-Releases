@@ -122,7 +122,7 @@ static id ivarNamed(id object, const char *name) {
 %end
 
 %ctor {
-    if (!SGRedesignedUI()) return;
+    if (!SGRedesignedUI() && !SGFlag(@"spotifyglass.native.glass", NO)) return;
     %init;
     SGRequireClasses(@[
         @"SPTBarOverlayPresentationTransition",

@@ -32,8 +32,11 @@ static void chooseAccent(void) {
 
 // The native look's rows of the Appearance card (App/Pages.m).
 NSArray<SGModRow *> *SGNativeAppearanceRows(void) {
+    SGModRow *nativeGlassRow = SGOptionRow(@"Liquid Glass bars", @"Add translucent glass to tab bar & mini-player", SGKeyNativeGlass);
+    nativeGlassRow.defaultOn = YES;
     return @[
         SGWithSymbol(SGOptionRow(@"AMOLED background", nil, SGKeyAmoled), @"moon"),
+        SGWithSymbol(nativeGlassRow, @"sparkles"),
         SGWithSymbol(SGStatActionRow(@"Accent colour", nil, ^NSString *{ return SGAccentLabel(); }, ^{ chooseAccent(); }), @"paintpalette"),
     ];
 }

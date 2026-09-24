@@ -14,8 +14,21 @@
 #import "Navbar.h"
 #import "Redesigned/Kit/SGRTokens.h"
 #import "Settings/SGPage.h"
+#import "Settings/SGPageStyle.h"
 #import "Headers/SPTEncoreIconView.h"
 #import <objc/message.h>
+
+static UIColor *barTintColor(void) {
+    if (SGRedesignedUI()) return SGRAccent();
+    NSInteger rgb = SGInt(@"spotifyglass.accent", -1);
+    if (rgb >= 0 && rgb <= 0xFFFFFF) {
+        CGFloat r = ((rgb >> 16) & 0xFF) / 255.0;
+        CGFloat g = ((rgb >> 8) & 0xFF) / 255.0;
+        CGFloat b = (rgb & 0xFF) / 255.0;
+        return [UIColor colorWithRed:r green:g blue:b alpha:1];
+    }
+    return SGGreen();
+}
 
 static char kBarKey, kHostKey;
 static __weak UIView *sg_stockBar;
@@ -354,7 +367,7 @@ static void syncBar(UIView *stockBar) {
         [host addSubview:bar];
         objc_setAssociatedObject(stockBar, &kHostKey, host, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
     }
-    bar.tintColor = SGRAccent();
+    bar.tintColor = barTintColor();
     UIView *host = objc_getAssociatedObject(stockBar, &kHostKey);
 
     for (UIView *sub in stockBar.subviews) {
@@ -367,7 +380,7 @@ static void syncBar(UIView *stockBar) {
     NSArray<UIView *> *sources = tabItems(stockBar);
     if (!sources.count) return;
     // An item with no title is drawn by UIKit as its glyph alone, centred, on a bar of the same height.
-    BOOL hideLabels = SGHidden(SGRKeyNavbarHideLabels);
+    BOOL hideLabels = SGRedesignedUI() && SGHidden(SGRKeyNavbarHideLabels);
 
     if (![sources isEqualToArray:bar.sources]) {
         NSMutableArray<UITabBarItem *> *items = [NSMutableArray array];
@@ -429,13 +442,13 @@ static UIView *tabBarOf(UIView *item) {
 %hook _TtC23NavigationUI_TabBarImpl10TabBarView
 - (void)layoutSubviews {
     %orig;
-    SGRComposeTabBar((UIView *)self);
+    if (SGRedesignedUI()) SGRComposeTabBar((UIView *)self);
     for (UIView *sub in ((UIView *)self).subviews) {
         if (![sub isKindOfClass:SGRTabBarHost.class]) [sub layoutIfNeeded];
     }
     holdHome((UIView *)self);
     syncBar((UIView *)self);
-    SGRLogTabBarRow((UIView *)self);
+    if (SGRedesignedUI()) SGRLogTabBarRow((UIView *)self);
 }
 %end
 
@@ -443,10 +456,10 @@ static UIView *tabBarOf(UIView *item) {
 static void itemDidLayOut(UIView *item) {
     UIView *bar = tabBarOf(item);
     if (!bar) return;
-    SGRComposeTabBar(bar);
+    if (SGRedesignedUI()) SGRComposeTabBar(bar);
     holdHome(bar);
     syncBar(bar);
-    SGRLogTabBarRow(bar);
+    if (SGRedesignedUI()) SGRLogTabBarRow(bar);
 }
 
 %hook _TtC23NavigationUI_TabBarImpl21TabBarItemElementView
@@ -481,7 +494,7 @@ static void itemDidLayOut(UIView *item) {
 %end
 
 %ctor {
-    if (!SGRedesignedUI()) return;
+    if (!SGRedesignedUI() && !SGFlag(@"spotifyglass.native.glass", NO)) return;
     %init;
     SGRequireClasses(@[
         @"_TtC23NavigationUI_TabBarImpl10TabBarView",

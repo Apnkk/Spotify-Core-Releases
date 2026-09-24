@@ -144,7 +144,7 @@ static void styleNowPlayingBar(UIViewController *container) {
 %end
 
 %ctor {
-    if (!SGRedesignedUI()) return;
+    if (!SGRedesignedUI() && !SGFlag(@"spotifyglass.native.glass", NO)) return;
     %init;
     SGRequireClasses(@[
         @"_TtC18NowPlaying_BarImpl36NowPlayingBarContainerViewController",
