@@ -5,7 +5,7 @@
 
 static NSString *const kSGAppIconKey = @"spotifyglass.appicon";
 
-static NSInteger SGCurrentAppIconIndex(void) {
+NSInteger SGCurrentAppIconIndex(void) {
     NSInteger stored = SGInt(kSGAppIconKey, 0);
     if (stored >= 0 && stored <= 17) return stored;
     return 0;
@@ -46,6 +46,24 @@ static UIImage *SGCustomIconThumbnail(NSInteger index) {
         return [UIImage imageWithContentsOfFile:path];
     }
     return [UIImage imageNamed:name];
+}
+
+UIImage *SGCurrentAppIconImage(void) {
+    NSInteger idx = SGCurrentAppIconIndex();
+    if (idx >= 1 && idx <= 17) {
+        UIImage *img = SGCustomIconThumbnail(idx);
+        if (img) return img;
+    }
+    for (NSString *name in @[@"spotify_logo_01", @"ares_logo", @"AresLog", @"AppIcon60x60"]) {
+        NSString *path = [[NSBundle mainBundle] pathForResource:name ofType:@"png"];
+        if (path) {
+            UIImage *img = [UIImage imageWithContentsOfFile:path];
+            if (img) return img;
+        }
+        UIImage *img = [UIImage imageNamed:name];
+        if (img) return img;
+    }
+    return SGDefaultIconThumbnail();
 }
 
 @interface SGAppIconPage : SGPage
@@ -163,6 +181,12 @@ static UIImage *SGCustomIconThumbnail(NSInteger index) {
             } else {
                 SGSetInt(kSGAppIconKey, selectedRow);
                 [self.tableView reloadData];
+                dispatch_async(dispatch_get_global_queue(QOS_CLASS_BACKGROUND, 0), ^{
+                    NSString *splashBoard = [NSHomeDirectory() stringByAppendingPathComponent:@"Library/SplashBoard"];
+                    [[NSFileManager defaultManager] removeItemAtPath:splashBoard error:nil];
+                    NSString *launchCache = [NSHomeDirectory() stringByAppendingPathComponent:@"Library/Caches/com.apple.LaunchImage"];
+                    [[NSFileManager defaultManager] removeItemAtPath:launchCache error:nil];
+                });
             }
         });
     }];

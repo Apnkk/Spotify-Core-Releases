@@ -88,7 +88,7 @@ jobs:
           cd spoti.pw-main
           chmod +x scripts/*.sh scripts/*.py
           export THEOS="$HOME/theos"
-          ./scripts/pipeline.sh "$IPA_PATH" --no-flex --extra-deb "$EEVEE_DEB" -o "$OUT_PATH"
+          ./scripts/pipeline.sh "$IPA_PATH" --no-flex --extra-deb "$EEVEE_DEB" --icon icons/spotify_logo_01.png -o "$OUT_PATH"
 
       - name: Upload IPA Artifact
         uses: actions/upload-artifact@v4
