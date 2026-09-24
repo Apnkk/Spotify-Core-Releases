@@ -15,7 +15,7 @@ UIVisualEffect *SGGlassEffect(void) {
         Class glass = NSClassFromString(@"UIGlassEffect");
         if ([glass respondsToSelector:@selector(effectWithStyle:)]) return [glass effectWithStyle:0];
     }
-    return [UIBlurEffect effectWithStyle:UIBlurEffectStyleSystemChromeMaterialDark];
+    return [UIBlurEffect effectWithStyle:UIBlurEffectStyleSystemThinMaterialDark];
 }
 
 static UIVisualEffectView *newPane(void) {

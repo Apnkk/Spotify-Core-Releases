@@ -30,11 +30,14 @@ static void chooseAccent(void) {
     [top presentViewController:sheet animated:YES completion:nil];
 }
 
-// The redesign's rows of the Appearance card (App/Pages.m). AMOLED has no row: the redesign is always black.
+static NSString *const SGKeyAmoled = @"spotifyglass.amoled";
+
+// The redesign's rows of the Appearance card (App/Pages.m).
 NSArray<SGModRow *> *SGRAppearanceRows(void) {
-    SGModRow *glassRow = SGOptionRow(@"Liquid Glass effect", @"Disable to use classic frosted blur", SGKeyLiquidGlass);
+    SGModRow *amoledRow = SGOptionRow(@"AMOLED background", nil, SGKeyAmoled);
+    amoledRow.defaultOn = YES;
     return @[
-        SGWithSymbol(glassRow, @"drop.fill"),
+        SGWithSymbol(amoledRow, @"moon"),
         SGWithSymbol(SGStatActionRow(@"Accent colour", nil, ^NSString *{ return SGRAccentLabel(); }, ^{ chooseAccent(); }), @"paintpalette"),
     ];
 }

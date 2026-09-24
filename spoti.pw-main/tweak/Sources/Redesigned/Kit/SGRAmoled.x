@@ -64,5 +64,6 @@ static CGColorRef copyBlack(CGColorRef color) {
 
 %ctor {
     if (!SGRedesignedUI()) return;
+    if (!SGFlag(@"spotifyglass.amoled", YES)) return;
     %init;
 }

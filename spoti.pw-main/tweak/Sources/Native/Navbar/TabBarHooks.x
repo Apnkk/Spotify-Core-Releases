@@ -33,15 +33,26 @@ static UIView *tabBarOf(UIView *item) {
 }
 
 static char kNativeTabBarGlassKey;
+static char kNativeTabBarRimKey;
 
 static void applyNativeTabBarGlass(UIView *bar) {
-    if (!bar || !SGFlag(@"spotifyglass.native.glass", YES)) return;
-    bar.backgroundColor = UIColor.clearColor;
-    bar.layer.backgroundColor = NULL;
-    if (bar.superview) {
-        bar.superview.backgroundColor = UIColor.clearColor;
-        bar.superview.layer.backgroundColor = NULL;
+    if (!bar) return;
+    BOOL enabled = SGFlag(@"spotifyglass.native.glass", YES);
+    UIVisualEffectView *glass = objc_getAssociatedObject(bar, &kNativeTabBarGlassKey);
+    CALayer *rim = objc_getAssociatedObject(bar, &kNativeTabBarRimKey);
+
+    if (!enabled) {
+        if (glass) glass.hidden = YES;
+        if (rim) rim.hidden = YES;
+        return;
     }
+
+    for (UIView *p = bar; p; p = p.superview) {
+        p.backgroundColor = UIColor.clearColor;
+        p.layer.backgroundColor = NULL;
+        if ([NSStringFromClass(p.class) containsString:@"TabBarContainer"]) break;
+    }
+
     for (UIView *sub in bar.subviews) {
         if ([sub isKindOfClass:UIVisualEffectView.class]) continue;
         sub.backgroundColor = UIColor.clearColor;
@@ -54,14 +65,29 @@ static void applyNativeTabBarGlass(UIView *bar) {
             }
         }
     }
-    UIVisualEffectView *glass = SGGlassFor(bar, &kNativeTabBarGlassKey);
+
+    if (!glass) {
+        glass = SGGlassFor(bar, &kNativeTabBarGlassKey);
+    }
     if (glass) {
+        glass.hidden = NO;
         glass.frame = bar.bounds;
         glass.layer.zPosition = -1;
         if (glass.overrideUserInterfaceStyle != UIUserInterfaceStyleDark) {
             glass.overrideUserInterfaceStyle = UIUserInterfaceStyleDark;
         }
+        glass.contentView.backgroundColor = [UIColor colorWithWhite:1.0 alpha:0.09];
     }
+
+    if (!rim) {
+        rim = [CALayer layer];
+        rim.backgroundColor = [UIColor colorWithWhite:1.0 alpha:0.25].CGColor;
+        [bar.layer addSublayer:rim];
+        objc_setAssociatedObject(bar, &kNativeTabBarRimKey, rim, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+    }
+    rim.hidden = NO;
+    rim.frame = CGRectMake(0, 0, bar.bounds.size.width, 0.5);
+    rim.zPosition = 100;
 }
 
 %hook _TtC23NavigationUI_TabBarImpl10TabBarView

@@ -25,7 +25,21 @@ static void hideConnectButton(UIView *bar) {
 static char kNativeNPBGlassKey;
 
 static void applyNativeNPBGlass(UIView *view) {
-    if (!view || !SGFlag(@"spotifyglass.native.glass", YES)) return;
+    if (!view) return;
+    BOOL enabled = SGFlag(@"spotifyglass.native.glass", YES);
+    UIVisualEffectView *glass = objc_getAssociatedObject(view, &kNativeNPBGlassKey);
+
+    if (!enabled) {
+        if (glass) glass.hidden = YES;
+        view.layer.borderWidth = 0;
+        view.layer.shadowOpacity = 0;
+        return;
+    }
+
+    if (view.superview) {
+        view.superview.backgroundColor = UIColor.clearColor;
+        view.superview.layer.backgroundColor = NULL;
+    }
     view.backgroundColor = UIColor.clearColor;
     view.layer.backgroundColor = NULL;
 
@@ -39,19 +53,32 @@ static void applyNativeNPBGlass(UIView *view) {
         v.layer.backgroundColor = NULL;
     });
 
-    UIVisualEffectView *glass = SGGlassFor(view, &kNativeNPBGlassKey);
+    if (!glass) {
+        glass = SGGlassFor(view, &kNativeNPBGlassKey);
+    }
     if (glass) {
+        glass.hidden = NO;
         glass.frame = view.bounds;
         glass.layer.zPosition = -1;
-        glass.layer.cornerRadius = 10;
+        glass.layer.cornerRadius = 12;
         glass.layer.cornerCurve = kCACornerCurveContinuous;
         glass.clipsToBounds = YES;
+        glass.contentView.backgroundColor = [UIColor colorWithWhite:1.0 alpha:0.12];
+        glass.layer.borderColor = [UIColor colorWithWhite:1.0 alpha:0.20].CGColor;
+        glass.layer.borderWidth = 0.5;
         if (glass.overrideUserInterfaceStyle != UIUserInterfaceStyleDark) {
             glass.overrideUserInterfaceStyle = UIUserInterfaceStyleDark;
         }
-        view.layer.cornerRadius = 10;
+
+        view.layer.cornerRadius = 12;
         view.layer.cornerCurve = kCACornerCurveContinuous;
-        view.clipsToBounds = YES;
+        view.layer.borderColor = [UIColor colorWithWhite:1.0 alpha:0.20].CGColor;
+        view.layer.borderWidth = 0.5;
+        view.layer.shadowColor = UIColor.blackColor.CGColor;
+        view.layer.shadowOpacity = 0.35f;
+        view.layer.shadowRadius = 8.0f;
+        view.layer.shadowOffset = CGSizeMake(0, 3);
+        view.clipsToBounds = NO;
     }
 }
 
@@ -64,8 +91,25 @@ static void applyNativeNPBGlass(UIView *view) {
 }
 %end
 
+%hook _TtC18NowPlaying_BarImpl36NowPlayingBarContainerViewController
+- (void)viewDidLayoutSubviews {
+    %orig;
+    UIViewController *vc = (UIViewController *)self;
+    vc.view.backgroundColor = UIColor.clearColor;
+    vc.view.layer.backgroundColor = NULL;
+    for (UIViewController *child in vc.childViewControllers) {
+        if ([NSStringFromClass(child.class) containsString:@"NowPlayingBarViewController"]) {
+            applyNativeNPBGlass(child.view);
+        }
+    }
+}
+%end
+
 %ctor {
     if (!SGNativeUI()) return;
     %init;
-    SGRequireClasses(@[@"_TtC18NowPlaying_BarImpl27NowPlayingBarViewController"]);
+    SGRequireClasses(@[
+        @"_TtC18NowPlaying_BarImpl27NowPlayingBarViewController",
+        @"_TtC18NowPlaying_BarImpl36NowPlayingBarContainerViewController",
+    ]);
 }

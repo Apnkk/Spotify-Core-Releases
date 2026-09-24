@@ -81,7 +81,7 @@ static UIColor *lookAccent(void) {
 }
 
 static BOOL lookBlack(void) {
-    return SGRedesignedUI() || SGFlag(kAmoledKey, NO);
+    return SGFlag(kAmoledKey, SGRedesignedUI() ? YES : NO);
 }
 
 UIColor *SGGreen(void) { return lookAccent() ?: [UIColor colorWithRed:0x1E / 255.0 green:0xD7 / 255.0 blue:0x60 / 255.0 alpha:1]; }
