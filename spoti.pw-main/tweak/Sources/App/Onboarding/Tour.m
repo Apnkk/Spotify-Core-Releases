@@ -6,11 +6,10 @@
 #import "App/Donate/Donate.h"
 
 static const CGFloat kMargin = 24;
-static const CGFloat kCardRadius = 22;
+static const CGFloat kCardRadius = 20;
 
 #pragma mark - glass
 
-// A view whose glass pane follows its bounds; the panes in SGGlass.m are laid out by their hosts.
 @interface SGGlassView : UIView
 @property (nonatomic) CGFloat radius;
 @property (nonatomic) BOOL capsule;
@@ -34,19 +33,33 @@ static UIButton *glassButton(NSString *title) {
     config.baseBackgroundColor = SGGreen();
     config.baseForegroundColor = UIColor.blackColor;
     config.contentInsets = NSDirectionalEdgeInsetsMake(15, 20, 15, 20);
-    config.attributedTitle = [[NSAttributedString alloc] initWithString:title attributes:@{NSFontAttributeName: [UIFont systemFontOfSize:17 weight:UIFontWeightSemibold]}];
+    config.attributedTitle = [[NSAttributedString alloc] initWithString:title attributes:@{NSFontAttributeName: [UIFont systemFontOfSize:17 weight:UIFontWeightBold]}];
     UIButton *button = [UIButton buttonWithConfiguration:config primaryAction:nil];
     button.translatesAutoresizingMaskIntoConstraints = NO;
     return button;
 }
 
+static UIButton *actionPill(NSString *title, NSString *symbolName, NSString *url) {
+    UIButtonConfiguration *config = [UIButtonConfiguration grayButtonConfiguration];
+    config.cornerStyle = UIButtonConfigurationCornerStyleCapsule;
+    config.baseForegroundColor = UIColor.whiteColor;
+    config.baseBackgroundColor = [UIColor colorWithWhite:1.0 alpha:0.12];
+    config.contentInsets = NSDirectionalEdgeInsetsMake(9, 14, 9, 14);
+    if (symbolName) {
+        config.image = [UIImage systemImageNamed:symbolName withConfiguration:[UIImageSymbolConfiguration configurationWithPointSize:12 weight:UIFontWeightSemibold]];
+        config.imagePadding = 6;
+    }
+    config.attributedTitle = [[NSAttributedString alloc] initWithString:title attributes:@{NSFontAttributeName: [UIFont systemFontOfSize:13 weight:UIFontWeightMedium]}];
+    UIButton *button = [UIButton buttonWithConfiguration:config primaryAction:[UIAction actionWithHandler:^(UIAction *action) {
+        SGOpenURL(url);
+    }]];
+    return button;
+}
+
 #pragma mark - the choice
 
-// One of the two looks, as a glass card: symbol, name, a line on what it brings, and a check
-// when it is the one picked.
 @interface SGLookCard : UIControl
 - (instancetype)initWithSymbol:(NSString *)symbol title:(NSString *)title subtitle:(NSString *)subtitle;
-// A look this phone cannot run: the card stays on the page, greyed and untappable, and says why.
 - (void)makeUnavailable:(NSString *)reason;
 @end
 
@@ -58,25 +71,27 @@ static UIButton *glassButton(NSString *title) {
 
 - (instancetype)initWithSymbol:(NSString *)symbol title:(NSString *)title subtitle:(NSString *)subtitle {
     if (!(self = [super initWithFrame:CGRectZero])) return nil;
-    UIImageView *icon = SGSymbolView(symbol, 17, UIImageSymbolWeightSemibold, 36);
+    UIImageView *icon = SGSymbolView(symbol, 18, UIImageSymbolWeightSemibold, 38);
     icon.tintColor = UIColor.whiteColor;
-    icon.backgroundColor = [UIColor colorWithWhite:1 alpha:0.10];
-    icon.layer.cornerRadius = 10;
+    icon.backgroundColor = [UIColor colorWithWhite:1 alpha:0.12];
+    icon.layer.cornerRadius = 11;
     icon.layer.cornerCurve = kCACornerCurveContinuous;
 
     UILabel *name = [UILabel new];
     name.text = title;
-    name.font = [UIFont systemFontOfSize:17 weight:UIFontWeightSemibold];
+    name.font = [UIFont systemFontOfSize:17 weight:UIFontWeightBold];
     name.textColor = UIColor.whiteColor;
+
     UILabel *line = [UILabel new];
     line.text = subtitle;
-    line.font = [UIFont systemFontOfSize:13];
+    line.font = [UIFont systemFontOfSize:13 weight:UIFontWeightRegular];
     line.textColor = SGGrey();
     line.numberOfLines = 0;
     _line = line;
+
     UIStackView *text = [[UIStackView alloc] initWithArrangedSubviews:@[name, line]];
     text.axis = UILayoutConstraintAxisVertical;
-    text.spacing = 2;
+    text.spacing = 3;
 
     _check = SGSymbolView(@"circle", 22, UIImageSymbolWeightRegular, 26);
 
@@ -95,7 +110,10 @@ static UIButton *glassButton(NSString *title) {
     self.clipsToBounds = YES;
     self.layer.cornerRadius = kCardRadius;
     self.layer.cornerCurve = kCACornerCurveContinuous;
-    self.layer.borderColor = SGGreen().CGColor;
+    self.layer.borderColor = [UIColor colorWithWhite:1.0 alpha:0.10].CGColor;
+    self.layer.borderWidth = 1.0;
+    self.backgroundColor = [UIColor colorWithWhite:1.0 alpha:0.05];
+
     [self addSubview:_glass];
     [self addSubview:row];
     [NSLayoutConstraint activateConstraints:@[
@@ -103,8 +121,8 @@ static UIButton *glassButton(NSString *title) {
         [_glass.bottomAnchor constraintEqualToAnchor:self.bottomAnchor],
         [_glass.leadingAnchor constraintEqualToAnchor:self.leadingAnchor],
         [_glass.trailingAnchor constraintEqualToAnchor:self.trailingAnchor],
-        [icon.widthAnchor constraintEqualToConstant:36],
-        [icon.heightAnchor constraintEqualToConstant:36],
+        [icon.widthAnchor constraintEqualToConstant:38],
+        [icon.heightAnchor constraintEqualToConstant:38],
         [row.leadingAnchor constraintEqualToAnchor:self.leadingAnchor constant:16],
         [row.trailingAnchor constraintEqualToAnchor:self.trailingAnchor constant:-16],
         [row.topAnchor constraintEqualToAnchor:self.topAnchor constant:16],
@@ -117,8 +135,10 @@ static UIButton *glassButton(NSString *title) {
     [super setSelected:selected];
     _check.image = [UIImage systemImageNamed:selected ? @"checkmark.circle.fill" : @"circle"
                            withConfiguration:[UIImageSymbolConfiguration configurationWithPointSize:22 weight:UIImageSymbolWeightRegular]];
-    _check.tintColor = selected ? SGGreen() : SGGrey();
-    self.layer.borderWidth = selected ? 2 : 0;
+    _check.tintColor = selected ? SGGreen() : [UIColor colorWithWhite:1.0 alpha:0.25];
+    self.layer.borderColor = selected ? SGGreen().CGColor : [UIColor colorWithWhite:1.0 alpha:0.10].CGColor;
+    self.layer.borderWidth = selected ? 2.0 : 1.0;
+    self.backgroundColor = selected ? [UIColor colorWithWhite:1.0 alpha:0.10] : [UIColor colorWithWhite:1.0 alpha:0.04];
 }
 
 - (void)setHighlighted:(BOOL)highlighted {
@@ -140,15 +160,12 @@ static UIButton *glassButton(NSString *title) {
 
 #pragma mark - the tour
 
-// One page, the one choice worth making now: the redesign or Spotify's own look. Everything else
-// waits in Mod Settings.
 @interface SGOnboardingController : UIViewController
 @end
 
 @implementation SGOnboardingController {
-    UIImageView *_hero;
     SGLookCard *_redesigned, *_legacy;
-    UIView *_beta;
+    UIView *_communitySection;
     UIButton *_primary;
 }
 
@@ -159,85 +176,135 @@ static UIButton *glassButton(NSString *title) {
     return self;
 }
 
-// Under the cards while the redesign is picked: it is a beta, and a bug report is the way to help.
-- (UIView *)betaNote {
-    UIImageView *icon = SGSymbolView(@"exclamationmark.triangle.fill", 15, UIImageSymbolWeightSemibold, 22);
-    icon.tintColor = UIColor.systemYellowColor;
+- (UIView *)communityNote {
+    BOOL isFR = [[[NSLocale preferredLanguages] firstObject] hasPrefix:@"fr"];
+
+    UIImageView *icon = SGSymbolView(@"sparkles", 14, UIImageSymbolWeightSemibold, 18);
+    icon.tintColor = SGGreen();
+
     UILabel *text = [UILabel new];
-    text.text = @"The redesign is a beta. Expect lags, freezes and bugs, and if you find one, please report it.";
-    text.font = [UIFont systemFontOfSize:13];
+    text.text = isFR ? @"Liquid Glass est une interface expérimentale signée Ares."
+                     : @"Liquid Glass is an experimental interface crafted by Ares.";
+    text.font = [UIFont systemFontOfSize:13 weight:UIFontWeightRegular];
     text.textColor = SGGrey();
     text.numberOfLines = 0;
     [text setContentHuggingPriority:UILayoutPriorityDefaultLow - 1 forAxis:UILayoutConstraintAxisHorizontal];
-    UIStackView *line = [[UIStackView alloc] initWithArrangedSubviews:@[icon, text]];
-    line.alignment = UIStackViewAlignmentTop;
-    line.spacing = 10;
 
-    UIButton *(^link)(NSString *, CGFloat, NSString *) = ^UIButton *(NSString *title, CGFloat lead, NSString *url) {
-        UIButtonConfiguration *config = [UIButtonConfiguration plainButtonConfiguration];
-        config.contentInsets = NSDirectionalEdgeInsetsMake(4, lead, 4, 0);
-        config.baseForegroundColor = SGGreen();
-        config.attributedTitle = [[NSAttributedString alloc] initWithString:title attributes:@{NSFontAttributeName: [UIFont systemFontOfSize:13 weight:UIFontWeightSemibold]}];
-        return [UIButton buttonWithConfiguration:config primaryAction:[UIAction actionWithHandler:^(UIAction *action) {
-            SGOpenURL(url);
-        }]];
-    };
-    UIStackView *links = [[UIStackView alloc] initWithArrangedSubviews:@[
-        link(@"Report a bug", 32, [SGRepoURL stringByAppendingString:@"/issues"]),
-        link(@"Ask on Discord", 16, SGDiscordURL),
-    ]];
+    UIStackView *line = [[UIStackView alloc] initWithArrangedSubviews:@[icon, text]];
+    line.alignment = UIStackViewAlignmentCenter;
+    line.spacing = 8;
+
+    UIButton *gitBtn = actionPill(@"GitHub", @"chevron.left.forwardslash.chevron.right", SGProjectURL);
+    UIButton *siteBtn = actionPill(isFR ? @"Site Web" : @"Website", @"globe", SGSiteURL);
+    UIButton *discordBtn = actionPill(@"Discord", @"bubble.left.and.bubble.right.fill", SGDiscordURL);
+
+    UIStackView *links = [[UIStackView alloc] initWithArrangedSubviews:@[gitBtn, siteBtn, discordBtn]];
+    links.axis = UILayoutConstraintAxisHorizontal;
+    links.spacing = 8;
+    links.alignment = UIStackViewAlignmentCenter;
+    links.distribution = UIStackViewDistributionFillProportionally;
 
     UIStackView *note = [[UIStackView alloc] initWithArrangedSubviews:@[line, links]];
     note.axis = UILayoutConstraintAxisVertical;
     note.alignment = UIStackViewAlignmentLeading;
-    note.spacing = 2;
-    note.layoutMargins = UIEdgeInsetsMake(4, 4, 0, 4);
+    note.spacing = 10;
+    note.layoutMargins = UIEdgeInsetsMake(6, 4, 0, 4);
     note.layoutMarginsRelativeArrangement = YES;
     return note;
 }
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    self.view.backgroundColor = [UIColor colorWithWhite:0 alpha:0.85];
+    // Fully opaque sleek dark background: Spotify dialogs behind cannot bleed through
+    self.view.backgroundColor = [UIColor colorWithRed:14/255.0 green:14/255.0 blue:16/255.0 alpha:1.0];
 
-    SGGlassView *halo = [SGGlassView new];
-    halo.capsule = YES;
-    halo.translatesAutoresizingMaskIntoConstraints = NO;
-    _hero = SGSymbolView(@"music.note", 34, UIImageSymbolWeightMedium, 88);
-    _hero.translatesAutoresizingMaskIntoConstraints = NO;
-    [halo addSubview:_hero];
-    // The column stretches its children to its width; the halo keeps its square inside a strip.
+    BOOL isFR = [[[NSLocale preferredLanguages] firstObject] hasPrefix:@"fr"];
+
+    // App Icon with green ambient glow
+    UIView *iconContainer = [UIView new];
+    iconContainer.translatesAutoresizingMaskIntoConstraints = NO;
+    iconContainer.layer.shadowColor = SGGreen().CGColor;
+    iconContainer.layer.shadowOffset = CGSizeMake(0, 4);
+    iconContainer.layer.shadowRadius = 16;
+    iconContainer.layer.shadowOpacity = 0.45;
+
+    UIImageView *iconView = [UIImageView new];
+    UIImage *appIcon = nil;
+    for (NSString *name in @[@"spotify_logo_01", @"AppIcon60x60"]) {
+        NSString *path = [[NSBundle mainBundle] pathForResource:name ofType:@"png"];
+        if (path) { appIcon = [UIImage imageWithContentsOfFile:path]; if (appIcon) break; }
+        appIcon = [UIImage imageNamed:name];
+        if (appIcon) break;
+    }
+    iconView.image = appIcon ?: [UIImage systemImageNamed:@"sparkles"];
+    iconView.contentMode = UIViewContentModeScaleAspectFit;
+    iconView.layer.cornerRadius = 18;
+    iconView.layer.cornerCurve = kCACornerCurveContinuous;
+    iconView.clipsToBounds = YES;
+    iconView.translatesAutoresizingMaskIntoConstraints = NO;
+    [iconContainer addSubview:iconView];
+
+    [NSLayoutConstraint activateConstraints:@[
+        [iconContainer.widthAnchor constraintEqualToConstant:72],
+        [iconContainer.heightAnchor constraintEqualToConstant:72],
+        [iconView.topAnchor constraintEqualToAnchor:iconContainer.topAnchor],
+        [iconView.bottomAnchor constraintEqualToAnchor:iconContainer.bottomAnchor],
+        [iconView.leadingAnchor constraintEqualToAnchor:iconContainer.leadingAnchor],
+        [iconView.trailingAnchor constraintEqualToAnchor:iconContainer.trailingAnchor],
+    ]];
+
     UIView *strip = [UIView new];
-    [strip addSubview:halo];
+    [strip addSubview:iconContainer];
+    [NSLayoutConstraint activateConstraints:@[
+        [iconContainer.leadingAnchor constraintEqualToAnchor:strip.leadingAnchor],
+        [iconContainer.topAnchor constraintEqualToAnchor:strip.topAnchor],
+        [iconContainer.bottomAnchor constraintEqualToAnchor:strip.bottomAnchor],
+    ]];
 
     BOOL glass = SGRedesignAvailable();
     UILabel *heading = [UILabel new];
-    heading.text = glass ? @"Pick your look." : @"Your look.";
+    heading.text = @"Spotify Core";
     heading.font = [UIFont systemFontOfSize:30 weight:UIFontWeightBold];
     heading.textColor = UIColor.whiteColor;
-    heading.numberOfLines = 0;
 
-    _redesigned = [[SGLookCard alloc] initWithSymbol:@"sparkles" title:@"Redesigned" subtitle:@"Looks like Apple Music. Better lyrics, Live Activity."];
-    _legacy = [[SGLookCard alloc] initWithSymbol:@"slider.horizontal.3" title:@"Legacy" subtitle:@"More options, still looks like Spotify."];
+    UILabel *subheading = [UILabel new];
+    subheading.text = isFR ? @"Choisissez votre interface préférée" : @"Choose your preferred interface";
+    subheading.font = [UIFont systemFontOfSize:15 weight:UIFontWeightRegular];
+    subheading.textColor = SGGrey();
+
+    UIStackView *titleStack = [[UIStackView alloc] initWithArrangedSubviews:@[heading, subheading]];
+    titleStack.axis = UILayoutConstraintAxisVertical;
+    titleStack.spacing = 4;
+
+    _redesigned = [[SGLookCard alloc] initWithSymbol:@"sparkles"
+                                               title:isFR ? @"Liquid Glass" : @"Liquid Glass"
+                                            subtitle:isFR ? @"Design inspiré d'Apple Music, paroles synchronisées et noir AMOLED."
+                                                          : @"Modern Apple Music look, synced lyrics, and pitch-black AMOLED."];
+
+    _legacy = [[SGLookCard alloc] initWithSymbol:@"slider.horizontal.3"
+                                           title:isFR ? @"Spotify Classique" : @"Spotify Classic"
+                                        subtitle:isFR ? @"Interface Spotify d'origine avec toutes les options et sans pub."
+                                                      : @"Original Spotify layout with all features and ad-free playback."];
+
     for (SGLookCard *card in @[_redesigned, _legacy]) [card addTarget:self action:@selector(picked:) forControlEvents:UIControlEventTouchUpInside];
-    // The first launch offers the redesign; the tour again from the Mod page shows the stored look.
+
     BOOL redesign = glass && (SGFlag(SGKeyOnboardingSeen, NO) ? SGRedesignedUIStored() : YES);
     _redesigned.selected = redesign;
     _legacy.selected = !redesign;
-    // Liquid Glass is drawn by iOS 26 and by nothing before it, so on an older phone the card stays
-    // on the page to say so and the legacy look is the only one left.
+
     if (!glass) {
         [_redesigned makeUnavailable:[NSString stringWithFormat:@"Needs iOS 26. This phone runs iOS %@.", UIDevice.currentDevice.systemVersion]];
         _legacy.enabled = NO;
     }
-    _beta = [self betaNote];
-    _beta.hidden = !redesign;
 
-    UIStackView *column = [[UIStackView alloc] initWithArrangedSubviews:@[strip, heading, _redesigned, _legacy, _beta]];
+    _communitySection = [self communityNote];
+    _communitySection.hidden = !redesign;
+
+    UIStackView *column = [[UIStackView alloc] initWithArrangedSubviews:@[strip, titleStack, _redesigned, _legacy, _communitySection]];
     column.axis = UILayoutConstraintAxisVertical;
-    column.spacing = 12;
-    [column setCustomSpacing:28 afterView:strip];
-    [column setCustomSpacing:24 afterView:heading];
+    column.spacing = 14;
+    [column setCustomSpacing:24 afterView:strip];
+    [column setCustomSpacing:22 afterView:titleStack];
     column.translatesAutoresizingMaskIntoConstraints = NO;
 
     UIScrollView *scroll = [UIScrollView new];
@@ -247,14 +314,16 @@ static UIButton *glassButton(NSString *title) {
     [scroll addSubview:column];
     [self.view addSubview:scroll];
 
-    _primary = glassButton(@"Start listening");
+    _primary = glassButton(isFR ? @"Commencer l'écoute" : @"Start listening");
     [_primary addTarget:self action:@selector(finish) forControlEvents:UIControlEventTouchUpInside];
+
     UILabel *footer = [UILabel new];
-    footer.text = @"Hold Home to open settings.";
+    footer.text = isFR ? @"Maintenez l'onglet Accueil pour ouvrir les réglages du mod." : @"Hold Home to open Mod Settings.";
     footer.font = [UIFont systemFontOfSize:13];
     footer.textColor = SGGrey();
     footer.textAlignment = NSTextAlignmentCenter;
     footer.translatesAutoresizingMaskIntoConstraints = NO;
+
     [self.view addSubview:_primary];
     [self.view addSubview:footer];
 
@@ -265,18 +334,11 @@ static UIButton *glassButton(NSString *title) {
         [scroll.leadingAnchor constraintEqualToAnchor:self.view.leadingAnchor],
         [scroll.trailingAnchor constraintEqualToAnchor:self.view.trailingAnchor],
         [scroll.bottomAnchor constraintEqualToAnchor:_primary.topAnchor constant:-12],
-        [column.topAnchor constraintEqualToAnchor:content.topAnchor constant:48],
+        [column.topAnchor constraintEqualToAnchor:content.topAnchor constant:40],
         [column.bottomAnchor constraintEqualToAnchor:content.bottomAnchor constant:-24],
         [column.leadingAnchor constraintEqualToAnchor:content.leadingAnchor constant:kMargin],
         [column.trailingAnchor constraintEqualToAnchor:content.trailingAnchor constant:-kMargin],
         [column.widthAnchor constraintEqualToAnchor:frame.widthAnchor constant:-2 * kMargin],
-        [halo.leadingAnchor constraintEqualToAnchor:strip.leadingAnchor],
-        [halo.topAnchor constraintEqualToAnchor:strip.topAnchor],
-        [halo.bottomAnchor constraintEqualToAnchor:strip.bottomAnchor],
-        [halo.widthAnchor constraintEqualToConstant:88],
-        [halo.heightAnchor constraintEqualToConstant:88],
-        [_hero.centerXAnchor constraintEqualToAnchor:halo.centerXAnchor],
-        [_hero.centerYAnchor constraintEqualToAnchor:halo.centerYAnchor],
         [_primary.leadingAnchor constraintEqualToAnchor:self.view.leadingAnchor constant:kMargin],
         [_primary.trailingAnchor constraintEqualToAnchor:self.view.trailingAnchor constant:-kMargin],
         [_primary.bottomAnchor constraintEqualToAnchor:footer.topAnchor constant:-12],
@@ -287,35 +349,30 @@ static UIButton *glassButton(NSString *title) {
     [self refresh];
 }
 
-// iOS 16 has no symbol effects and skips the bounce.
-- (void)viewDidAppear:(BOOL)animated {
-    [super viewDidAppear:animated];
-    if (@available(iOS 17.0, *)) [_hero addSymbolEffect:[NSClassFromString(@"NSSymbolBounceEffect") effect]];
-}
-
 - (void)picked:(SGLookCard *)card {
     _redesigned.selected = card == _redesigned;
     _legacy.selected = card == _legacy;
     BOOL hide = !_redesigned.selected;
-    if (_beta.hidden != hide) {
+    if (_communitySection.hidden != hide) {
         [UIView animateWithDuration:0.25 animations:^{
-            self->_beta.hidden = hide;
-            self->_beta.alpha = hide ? 0 : 1;
+            self->_communitySection.hidden = hide;
+            self->_communitySection.alpha = hide ? 0 : 1;
             [self.view layoutIfNeeded];
         }];
     }
     [self refresh];
 }
 
-// The look is picked at launch, so a choice that differs from the running one ends the tour in a restart.
 - (BOOL)needsRestart {
     return _redesigned.selected != SGRedesignedUI();
 }
 
 - (void)refresh {
+    BOOL isFR = [[[NSLocale preferredLanguages] firstObject] hasPrefix:@"fr"];
     UIButtonConfiguration *config = _primary.configuration;
-    NSString *title = self.needsRestart ? @"Restart Spotify" : @"Start listening";
-    config.attributedTitle = [[NSAttributedString alloc] initWithString:title attributes:@{NSFontAttributeName: [UIFont systemFontOfSize:17 weight:UIFontWeightSemibold]}];
+    NSString *title = isFR ? (self.needsRestart ? @"Redémarrer Spotify" : @"Commencer l'écoute")
+                           : (self.needsRestart ? @"Restart Spotify" : @"Start listening");
+    config.attributedTitle = [[NSAttributedString alloc] initWithString:title attributes:@{NSFontAttributeName: [UIFont systemFontOfSize:17 weight:UIFontWeightBold]}];
     _primary.configuration = config;
 }
 
@@ -342,10 +399,25 @@ BOOL SGOnboardingShowing(void) {
 
 void SGShowOnboarding(void) {
     if (sg_tour) return;
+    UIViewController *root = nil;
+    for (UIScene *scene in UIApplication.sharedApplication.connectedScenes) {
+        if (![scene isKindOfClass:UIWindowScene.class]) continue;
+        for (UIWindow *window in ((UIWindowScene *)scene).windows) {
+            if (window.isKeyWindow) { root = window.rootViewController; break; }
+        }
+    }
+    if (!root) {
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{ SGShowOnboarding(); });
+        return;
+    }
+    // If Spotify has a modal presented (such as Bluetooth permission, login, etc.), wait for it to be dismissed!
+    if (root.presentedViewController != nil) {
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{ SGShowOnboarding(); });
+        return;
+    }
     UIViewController *top = SGTopController();
-    // Presenting from an alert lands nowhere; the tour waits for it to go.
-    if (!top || [top isKindOfClass:UIAlertController.class]) {
-        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{ SGShowOnboarding(); });
+    if (!top || [top isKindOfClass:UIAlertController.class] || top.isBeingPresented || top.isBeingDismissed) {
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{ SGShowOnboarding(); });
         return;
     }
     SGOnboardingController *tour = [SGOnboardingController new];

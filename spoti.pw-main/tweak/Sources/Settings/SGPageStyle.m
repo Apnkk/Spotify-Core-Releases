@@ -210,6 +210,7 @@ UIViewController *SGTopController(void) {
 
 NSString *const SGSiteURL = @"https://aress.ovh";
 NSString *const SGRepoURL = @"https://github.com/Apnkk/Spotify-Core-Releases";
+NSString *const SGProjectURL = @"https://github.com/Apnkk/Spotify-EeveeSpoti-Combined";
 NSString *const SGDiscordURL = @"https://discord.gg/9e4GR8TKMj";
 
 void SGOpenURL(NSString *url) {

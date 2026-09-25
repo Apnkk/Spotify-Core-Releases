@@ -10,7 +10,7 @@
     %orig;
     static dispatch_once_t once;
     dispatch_once(&once, ^{
-        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.8 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
             if (SGFlag(SGKeyOnboardingSeen, NO)) SGOfferDonate();
             else SGShowOnboarding();
         });

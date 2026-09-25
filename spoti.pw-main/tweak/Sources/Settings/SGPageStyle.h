@@ -33,6 +33,7 @@ UITableViewCell *SGDequeueCell(UITableView *table, NSString *identifier);
 void SGOpenURL(NSString *url);
 extern NSString *const SGSiteURL;
 extern NSString *const SGRepoURL;
+extern NSString *const SGProjectURL;
 extern NSString *const SGDiscordURL;
 // The controller on top of the key window, through whatever is presented over it.
 UIViewController *SGTopController(void);
