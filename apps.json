@@ -12,21 +12,21 @@
       "bundleIdentifier": "com.spotify.client",
       "developerName": "Ares",
       "subtitle": "EeveeSpotify Premium + Liquid Glass",
-      "version": "0.22.30",
-      "versionDate": "2026-09-25T06:45:25Z",
-      "versionDescription": "Release v0.22.30: EeveeSpotify + Spotify Core By Ares Combined",
-      "downloadURL": "https://github.com/Apnkk/Spotify-Core-Releases/releases/download/v0.22.30/Spotify_Eevee_SpotiPW_Combined.ipa",
+      "version": "0.22.31",
+      "versionDate": "2026-09-25T07:13:42Z",
+      "versionDescription": "Release v0.22.31: EeveeSpotify + Spotify Core By Ares Combined",
+      "downloadURL": "https://github.com/Apnkk/Spotify-Core-Releases/releases/download/v0.22.31/Spotify_Eevee_SpotiPW_Combined.ipa",
       "localizedDescription": "EeveeSpotify Premium features fused with the revolutionary Liquid Glass interface, custom Ares themes, alternate icons, and audio DSP.",
       "iconURL": "https://raw.githubusercontent.com/Apnkk/Spotify-Core-Releases/main/assets/ares_logo.png",
       "tintColor": "1DB954",
-      "size": 146793754,
+      "size": 146794507,
       "versions": [
         {
-          "version": "0.22.30",
-          "date": "2026-09-25T06:45:25Z",
-          "localizedDescription": "Release v0.22.30: EeveeSpotify + Spotify Core By Ares Combined",
-          "downloadURL": "https://github.com/Apnkk/Spotify-Core-Releases/releases/download/v0.22.30/Spotify_Eevee_SpotiPW_Combined.ipa",
-          "size": 146793754
+          "version": "0.22.31",
+          "date": "2026-09-25T07:13:42Z",
+          "localizedDescription": "Release v0.22.31: EeveeSpotify + Spotify Core By Ares Combined",
+          "downloadURL": "https://github.com/Apnkk/Spotify-Core-Releases/releases/download/v0.22.31/Spotify_Eevee_SpotiPW_Combined.ipa",
+          "size": 146794507
         }
       ]
     }
