@@ -3,6 +3,4 @@
 
 UIViewController *SGAppIconPickerPage(void);
 NSString *SGCurrentAppIconLabel(void);
-NSInteger SGCurrentAppIconIndex(void);
-UIImage *SGCurrentAppIconImage(void);
 SGModRow *SGAppIconRow(void);

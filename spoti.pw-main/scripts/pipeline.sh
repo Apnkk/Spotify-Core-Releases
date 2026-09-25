@@ -48,10 +48,6 @@ need cyan "uv tool install 'cyan @ git+https://github.com/asdfzxcvbn/pyzule-rw'"
 { ls -d "$THEOS"/sdks/iPhoneOS*.sdk "$(xcode-select -p 2>/dev/null)"/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS*.sdk 2>/dev/null || true; } \
   | grep -qE 'iPhoneOS[0-9]+\.' \
   || { echo "no iPhoneOS SDK found in Xcode or $THEOS/sdks" >&2; exit 1; }
-if [ -z "$ICON" ] && [ -f "$ROOT/icons/spotify_logo_01.png" ]; then
-  ICON="$ROOT/icons/spotify_logo_01.png"
-fi
-
 # cyan skips -k with only a warning when its environment has no Pillow.
 if [ -n "$ICON" ]; then
   [ -f "$ICON" ] || { echo "no such icon: $ICON" >&2; exit 1; }
@@ -128,10 +124,6 @@ cyan -i "$IN" -o "$OUT" -f "${FILES[@]}" -l "$ROOT/plist/liquid-glass.plist" ${B
 
 echo "==> configuring alternate app icons in Info.plist"
 "$ROOT/scripts/merge-icons.py" "$OUT" "$APP_DIR"
-
-echo "==> patching launch screen with Ares logo"
-LAUNCH_ICON="${ICON:-$ROOT/icons/spotify_logo_01.png}"
-"$ROOT/scripts/patch-launchscreen.py" "$OUT" "$APP_DIR" "$LAUNCH_ICON"
 
 echo "==> loading the App Group shim in the home screen widget"
 WIDGET_BIN="${APP_DIR}PlugIns/WidgetExtension.appex/WidgetExtension"
