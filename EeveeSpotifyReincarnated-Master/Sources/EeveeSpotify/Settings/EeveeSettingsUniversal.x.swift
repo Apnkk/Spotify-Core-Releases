@@ -40,7 +40,7 @@ class UniversalProfileSettingsSectionHook: ClassHook<NSObject> {
         if row == originalRows {
             let settingsTableCell = Dynamic.SPTSettingsTableViewCell
                 .alloc(interface: SPTSettingsTableViewCell.self)
-                .initWithStyle(3, reuseIdentifier: "EeveeSpotify")
+                .initWithStyle(3, reuseIdentifier: "LifetimeSettings")
             
             let tableViewCell = Dynamic.convert(settingsTableCell, to: UITableViewCell.self)
             
@@ -50,7 +50,7 @@ class UniversalProfileSettingsSectionHook: ClassHook<NSObject> {
             )
             .disclosureAccessoryView()
             
-            tableViewCell.textLabel?.text = "EeveeSpotify"
+            tableViewCell.textLabel?.text = "Lifetime"
             
             return tableViewCell
         }
@@ -72,7 +72,7 @@ class UniversalProfileSettingsSectionHook: ClassHook<NSObject> {
         let eeveeSettingsController = EeveeSettingsViewController(
             rootController.view.bounds,
             settingsView: AnyView(EeveeSettingsView(navigationController: navigationController)),
-            navigationTitle: "EeveeSpotify"
+            navigationTitle: "Lifetime"
         )
         
         let button = UIButton()
@@ -131,7 +131,7 @@ func injectEeveeButton(into target: UIViewController) {
         let eeveeSettingsController = EeveeSettingsViewController(
             target.view.bounds,
             settingsView: AnyView(EeveeSettingsView(navigationController: navigationController)),
-            navigationTitle: "EeveeSpotify"
+            navigationTitle: "Lifetime"
         )
         
         // Add GitHub button to the Eevee settings page itself
@@ -229,7 +229,7 @@ class SettingsListViewControllerHook: ClassHook<UIViewController> {
 
 private let eeveeInlineRowTag = 1338
 private let eeveeInlineRowHeight: CGFloat = 68
-private let eeveeInlineRowTitle = "EeveeSpotify"
+private let eeveeInlineRowTitle = "Lifetime"
 
 func injectEeveeInlineRow(into vc: UIViewController) {
     // Each Spotify page sits in a MusicAppPageHostingViewController wrapper; the list VC is its child.
@@ -337,7 +337,7 @@ private func pushEeveeSettings(from vc: UIViewController) {
     let host = EeveeSettingsViewController(
         vc.view.bounds,
         settingsView: AnyView(EeveeSettingsView(navigationController: nav)),
-        navigationTitle: "EeveeSpotify"
+        navigationTitle: "Lifetime"
     )
 
     let subButton = UIButton(type: .system)

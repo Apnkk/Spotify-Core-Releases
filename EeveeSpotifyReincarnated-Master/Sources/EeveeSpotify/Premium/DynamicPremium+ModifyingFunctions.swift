@@ -91,6 +91,11 @@ private let propertyReplacements = [
     EeveePropertyReplacement(name: "enable_home_sponsored_ad", modification: .setBool(false)),
     EeveePropertyReplacement(name: "enable_home_sponsored_ads", modification: .setBool(false)),
     EeveePropertyReplacement(name: "enable_home_upsell", modification: .setBool(false)),
+    EeveePropertyReplacement(name: "audio_ads_enabled", modification: .setBool(false)),
+    EeveePropertyReplacement(name: "video_ads_enabled", modification: .setBool(false)),
+    EeveePropertyReplacement(name: "display_ads_enabled", modification: .setBool(false)),
+    EeveePropertyReplacement(name: "audio_ad_frequency", modification: .setEnum("0")),
+    EeveePropertyReplacement(name: "video_ad_frequency", modification: .setEnum("0")),
 
     // Spotify 9.1.66+ moved the most visible free-tier prompts into dedicated
     // Swift services. Seed these scoped values even when the account's UCS
@@ -281,6 +286,12 @@ private let propertyReplacements = [
     EeveePropertyReplacement(scope: "ios-adsnowplaying-embeddednpv-impl", modification: .remove),
     EeveePropertyReplacement(scope: "ios-adsplatform-elementimpl", modification: .remove),
     EeveePropertyReplacement(scope: "ios-system-adssponsoredcontext", modification: .remove),
+    EeveePropertyReplacement(scope: "ios-feature-adsrealtime", modification: .remove),
+    EeveePropertyReplacement(scope: "ios-adsembedded-embeddedplaylist-impl", modification: .remove),
+    EeveePropertyReplacement(scope: "ios-adsembedded-embeddedadcontroller-impl", modification: .remove),
+    EeveePropertyReplacement(scope: "ios-adsplatform-realtimeadcontroller-impl", modification: .remove),
+    EeveePropertyReplacement(scope: "ios-adsplatform-adsinstrumentation-impl", modification: .remove),
+    EeveePropertyReplacement(scope: "ios-adsplatform-adsidentitytracking-impl", modification: .remove),
 
     // ─────────────────────────────────────────────────────────────────────
     // Ads base infrastructure
@@ -441,6 +452,38 @@ private func modifyAttributes(_ attributes: inout [String: AccountAttribute]) {
         $0.boolValue = false
     }
     
+    attributes["audio-ad-frequency"] = AccountAttribute.with {
+        $0.stringValue = "0"
+    }
+    
+    attributes["video-ad-frequency"] = AccountAttribute.with {
+        $0.stringValue = "0"
+    }
+
+    attributes["pause-ad"] = AccountAttribute.with {
+        $0.stringValue = "0"
+    }
+
+    attributes["ad-products"] = AccountAttribute.with {
+        $0.stringValue = ""
+    }
+
+    attributes["ad-rules"] = AccountAttribute.with {
+        $0.stringValue = ""
+    }
+
+    attributes["ad-stream-rules"] = AccountAttribute.with {
+        $0.stringValue = ""
+    }
+
+    attributes["ad-slots"] = AccountAttribute.with {
+        $0.stringValue = ""
+    }
+
+    attributes["stream-type"] = AccountAttribute.with {
+        $0.stringValue = "premium"
+    }
+
     attributes["ab-ad-player-targeting"] = AccountAttribute.with {
         $0.stringValue = "0"
     }

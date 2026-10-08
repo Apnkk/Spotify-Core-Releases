@@ -50,7 +50,7 @@ private func isUpsellText(_ text: String?) -> Bool {
 // Premium upsells and must remain visible even if their localized body happens
 // to contain one of the generic keywords above.
 private func isEeveePopupTitle(_ title: String?) -> Bool {
-    title == "EeveeSpotify"
+    title == "EeveeSpotify" || title == "Lifetime"
 }
 
 private func markAsUpsell(_ object: AnyObject) {

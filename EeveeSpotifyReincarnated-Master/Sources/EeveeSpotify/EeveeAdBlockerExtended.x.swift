@@ -21,6 +21,12 @@ struct SponsoredPlaylistHeaderServiceGroup: HookGroup {}
 struct SponsoredPlaylistHeaderViewGroup: HookGroup {}
 struct NativeAdsLoggerServiceGroup: HookGroup {}
 struct SponsoredCtxAttachmentGroup: HookGroup {}
+struct RealTimeAdControllerServiceGroup: HookGroup {}
+struct EmbeddedPlaylistServiceGroup: HookGroup {}
+struct EmbeddedAdControllerServiceGroup: HookGroup {}
+struct EmbeddedCTAElementsServiceGroup: HookGroup {}
+struct AdsInstrumentationServiceGroup: HookGroup {}
+struct AdsIdentityTrackingSessionServiceGroup: HookGroup {}
 
 private let killAdsServiceImpl         = true
 private let killInStreamAdsService     = true
@@ -148,6 +154,60 @@ class NativeAdsLoggerServiceImplKill: ClassHook<NSObject> {
     }
 }
 
+class RealTimeAdControllerServiceKill: ClassHook<NSObject> {
+    typealias Group = RealTimeAdControllerServiceGroup
+    static let targetName: String = "_TtC36AdsPlatform_RealTimeAdControllerImpl31RealTimeAdControllerServiceImpl"
+    func load() {
+        adlog("RealTimeAdControllerServiceImpl.load")
+        return
+    }
+}
+
+class EmbeddedPlaylistServiceKill: ClassHook<NSObject> {
+    typealias Group = EmbeddedPlaylistServiceGroup
+    static let targetName: String = "_TtC32AdsEmbedded_EmbeddedPlaylistImpl27EmbeddedPlaylistServiceImpl"
+    func load() {
+        adlog("EmbeddedPlaylistServiceImpl.load")
+        return
+    }
+}
+
+class EmbeddedAdControllerServiceKill: ClassHook<NSObject> {
+    typealias Group = EmbeddedAdControllerServiceGroup
+    static let targetName: String = "_TtC36AdsEmbedded_EmbeddedAdControllerImpl31EmbeddedAdControllerServiceImpl"
+    func load() {
+        adlog("EmbeddedAdControllerServiceImpl.load")
+        return
+    }
+}
+
+class EmbeddedCTAElementsServiceKill: ClassHook<NSObject> {
+    typealias Group = EmbeddedCTAElementsServiceGroup
+    static let targetName: String = "_TtC35AdsEmbedded_EmbeddedCTAElementsImpl30EmbeddedCTAElementsServiceImpl"
+    func load() {
+        adlog("EmbeddedCTAElementsServiceImpl.load")
+        return
+    }
+}
+
+class AdsInstrumentationServiceKill: ClassHook<NSObject> {
+    typealias Group = AdsInstrumentationServiceGroup
+    static let targetName: String = "_TtC34AdsPlatform_AdsInstrumentationImpl29AdsInstrumentationServiceImpl"
+    func load() {
+        adlog("AdsInstrumentationServiceImpl.load")
+        return
+    }
+}
+
+class AdsIdentityTrackingSessionServiceKill: ClassHook<NSObject> {
+    typealias Group = AdsIdentityTrackingSessionServiceGroup
+    static let targetName: String = "_TtC35AdsPlatform_AdsIdentityTrackingImpl33AdsIdentityTrackingSessionService"
+    func load() {
+        adlog("AdsIdentityTrackingSessionService.load")
+        return
+    }
+}
+
 // Passive log only — returning nil from init would crash the alloc chain.
 // Upstream events are starved by killing AdsServiceImpl above.
 class SponsoredCtxAttachmentProbe: ClassHook<NSObject> {
@@ -176,6 +236,12 @@ func activateEeveeAdBlockerExtended() {
         (SponsoredContextNPBAttachmentServiceKill.targetName, "AdsSponsoredContextNPBAttachmentServiceImpl", { SponsoredContextNPBAttachmentServiceGroup().activate() }),
         (SponsoredPlaylistHeaderServiceKill.targetName, "AdsSponsoredPlaylistHeaderServiceImpl", { SponsoredPlaylistHeaderServiceGroup().activate() }),
         (NativeAdsLoggerServiceImplKill.targetName, "NativeAdsLoggerServiceImpl", { NativeAdsLoggerServiceGroup().activate() }),
+        (RealTimeAdControllerServiceKill.targetName, "RealTimeAdControllerServiceImpl", { RealTimeAdControllerServiceGroup().activate() }),
+        (EmbeddedPlaylistServiceKill.targetName, "EmbeddedPlaylistServiceImpl", { EmbeddedPlaylistServiceGroup().activate() }),
+        (EmbeddedAdControllerServiceKill.targetName, "EmbeddedAdControllerServiceImpl", { EmbeddedAdControllerServiceGroup().activate() }),
+        (EmbeddedCTAElementsServiceKill.targetName, "EmbeddedCTAElementsServiceImpl", { EmbeddedCTAElementsServiceGroup().activate() }),
+        (AdsInstrumentationServiceKill.targetName, "AdsInstrumentationServiceImpl", { AdsInstrumentationServiceGroup().activate() }),
+        (AdsIdentityTrackingSessionServiceKill.targetName, "AdsIdentityTrackingSessionService", { AdsIdentityTrackingSessionServiceGroup().activate() }),
     ]
 
     var activated = 0

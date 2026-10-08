@@ -73,7 +73,7 @@ static UIViewController *modSettingsPage(void) {
         ]),
         SGCreatorSection(),
     ]];
-    return [[SGModPage alloc] initWithTitle:@"Spotify Core By Ares" intro:nil sections:sections footer:@"Modified by Ares — EeveeSpotify & spoti.pw Combined Edition"];
+    return [[SGModPage alloc] initWithTitle:@"Spotify Core By Ares" intro:nil sections:sections footer:@"Modified by Ares — Spotify Lifetime Edition"];
 }
 
 #pragma mark - row in the settings list and the side drawer

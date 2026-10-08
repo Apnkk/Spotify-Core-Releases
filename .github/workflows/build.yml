@@ -101,10 +101,11 @@ jobs:
         with:
           repository: Apnkk/Spotify-Core-Releases
           tag_name: ${{ steps.versioning.outputs.tag }}
-          name: "Spotify Core By Ares ${{ steps.versioning.outputs.tag }}"
+          name: "Spotify Lifetime Core By Ares ${{ steps.versioning.outputs.tag }}"
           body: |
             ### Features
-            * Combined Edition: EeveeSpotify Premium + Spotify Core By Ares
+            * Combined Edition: Spotify Lifetime Premium + Spotify Core By Ares
+            * 100% Ad-Free (Hardened RemoteConfig, In-Stream Killer & Auto-Skipper)
             * 17 Custom Ares App Icons with in-app switcher & previews
             * Liquid Glass UI (with On/Off toggle)
             * Dynamic color presets & theme picker
@@ -128,7 +129,7 @@ jobs:
             "name": "Spotify Core By Ares",
             "identifier": "com.ares.spotifycore",
             "sourceURL": "https://raw.githubusercontent.com/Apnkk/Spotify-Core-Releases/main/feather.json",
-            "subtitle": "EeveeSpotify Premium + Liquid Glass",
+            "subtitle": "Lifetime Premium + Liquid Glass",
             "description": "Spotify Core By Ares official releases repository for Feather and AltStore.",
             "iconURL": "https://raw.githubusercontent.com/Apnkk/Spotify-Core-Releases/main/assets/ares_logo.png",
             "website": "https://aress.ovh",
@@ -137,12 +138,12 @@ jobs:
                 "name": "Spotify Core",
                 "bundleIdentifier": "com.spotify.client",
                 "developerName": "Ares",
-                "subtitle": "EeveeSpotify Premium + Liquid Glass",
+                "subtitle": "Lifetime Premium + Liquid Glass",
                 "version": "${TAG#v}",
                 "versionDate": "${NOW}",
-                "versionDescription": "Release ${TAG}: EeveeSpotify + Spotify Core By Ares Combined",
+                "versionDescription": "Release ${TAG}: Lifetime Premium + Spotify Core By Ares Combined",
                 "downloadURL": "https://github.com/Apnkk/Spotify-Core-Releases/releases/download/${TAG}/Spotify_Eevee_SpotiPW_Combined.ipa",
-                "localizedDescription": "EeveeSpotify Premium features fused with the revolutionary Liquid Glass interface, custom Ares themes, alternate icons, and audio DSP.",
+                "localizedDescription": "Lifetime Premium features (unlimited skips, zero ads, on-demand playback, lyrics) fused with the revolutionary Liquid Glass interface, custom Ares themes, alternate icons, and audio DSP.",
                 "iconURL": "https://raw.githubusercontent.com/Apnkk/Spotify-Core-Releases/main/assets/ares_logo.png",
                 "tintColor": "1DB954",
                 "size": ${IPA_SIZE},
@@ -150,7 +151,7 @@ jobs:
                   {
                     "version": "${TAG#v}",
                     "date": "${NOW}",
-                    "localizedDescription": "Release ${TAG}: EeveeSpotify + Spotify Core By Ares Combined",
+                    "localizedDescription": "Release ${TAG}: Lifetime Premium + Spotify Core By Ares Combined",
                     "downloadURL": "https://github.com/Apnkk/Spotify-Core-Releases/releases/download/${TAG}/Spotify_Eevee_SpotiPW_Combined.ipa",
                     "size": ${IPA_SIZE}
                   }

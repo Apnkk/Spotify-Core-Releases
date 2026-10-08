@@ -35,8 +35,8 @@ private func forcedPremiumString(forKey key: String) -> String? {
     case "manager":                                return "1"
     case "nft-disabled":                           return "1"
 
-    case "streaming-rules":                        return ""
-    case "previous-streaming-rules":               return ""
+    case "streaming-rules":                        return nil
+    case "previous-streaming-rules":               return nil
     case "high-bitrate":                           return "1"
     case "shuffle":                                return "0"
     case "shuffle-mode":                           return "0"
@@ -215,9 +215,9 @@ private func swizzleBoolGetter(_ cls: AnyClass, _ name: String, _ value: Bool) {
 
 struct EeveePremiumForceGroup: HookGroup {}
 
-private let enableDictRewrite = false
-private let enableDirectGetters = false
-private let enableAdsHook = false
+private let enableDictRewrite = true
+private let enableDirectGetters = true
+private let enableAdsHook = true
 private let enablePassiveProductStateLog = true
 
 func activateEeveePremiumForce() {
@@ -229,11 +229,8 @@ func activateEeveePremiumForce() {
     guard enableDictRewrite || enableDirectGetters || enableAdsHook || enablePassiveProductStateLog else {
         return
     }
-    // This ran completely unguarded before - unlike every other hook group in this
-    // codebase - so a Spotify build that renames/removes one of these methods would
-    // fail the hook and (pre handleError override) instantly crash at launch.
-    guard NSClassFromString("SPTCoreProductState") != nil else {
-        NSLog("[FORCE] Skipped: SPTCoreProductState not found")
+    guard NSClassFromString("SPTCoreProductState") != nil || NSClassFromString("SPTAdsProductState") != nil else {
+        NSLog("[FORCE] Skipped: product state classes not found")
         return
     }
     EeveePremiumForceGroup().activate()

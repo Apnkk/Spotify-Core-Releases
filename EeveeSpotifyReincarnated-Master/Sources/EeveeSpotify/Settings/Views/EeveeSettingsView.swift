@@ -242,7 +242,7 @@ struct EeveeSettingsView: View {
                 }
             }
 
-            Section(footer: Text("Modified by Ares — EeveeSpotify & spoti.pw Combined Edition\n\n" + "resetFooter".localized)) {
+            Section(footer: Text("Modified by Ares — Spotify Lifetime Edition\n\n" + "resetFooter".localized)) {
                 Button {
                     confirmDestructive(
                         title: "resetButtonTitle".localized,

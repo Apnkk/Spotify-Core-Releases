@@ -51,11 +51,64 @@ static void report(id state, BOOL platform) {
     else dispatch_async(dispatch_get_main_queue(), apply);
 }
 
+static NSString *sg_lastSkippedAdURI;
+
+static BOOL SGIsTrackAd(SPTPlayerTrack *track) {
+    if (!track) return NO;
+    NSString *uri = SGURIString(track.URI);
+    if (uri.length) {
+        NSString *lower = [uri lowercaseString];
+        if ([lower containsString:@":ad:"] || 
+            [lower hasPrefix:@"spotify:ad"] || 
+            [lower containsString:@"ad-logic"] || 
+            [lower containsString:@"commercial"] ||
+            [lower containsString:@":advertisement:"]) {
+            return YES;
+        }
+    }
+    if ([track respondsToSelector:@selector(metadata)]) {
+        NSDictionary *metadata = track.metadata;
+        if ([metadata isKindOfClass:[NSDictionary class]]) {
+            id isAd = metadata[@"is_advertisement"];
+            if ([isAd respondsToSelector:@selector(boolValue)] && [isAd boolValue]) return YES;
+            if ([isAd isKindOfClass:[NSString class]] && [isAd isEqualToString:@"true"]) return YES;
+            if (metadata[@"ad.id"] || metadata[@"ad_id"]) return YES;
+            if ([metadata[@"media.type"] isEqualToString:@"ad"]) return YES;
+            if ([metadata[@"ad_type"] length] > 0) return YES;
+            id isAdGen = metadata[@"is_ad"];
+            if ([isAdGen respondsToSelector:@selector(boolValue)] && [isAdGen boolValue]) return YES;
+        }
+    }
+    return NO;
+}
+
+static void SGCheckAndSkipAd(id player, id state) {
+    if (![state isKindOfClass:objc_getClass("SPTPlayerState")]) return;
+    SPTPlayerState *playerState = (SPTPlayerState *)state;
+    SPTPlayerTrack *track = [playerState respondsToSelector:@selector(track)] ? playerState.track : nil;
+    if (!track) return;
+    
+    if (SGIsTrackAd(track)) {
+        NSString *uri = SGURIString(track.URI) ?: @"unknown-ad";
+        if ([uri isEqualToString:sg_lastSkippedAdURI]) return;
+        sg_lastSkippedAdURI = uri;
+        SGLog(@"[Lifetime] Audio/Video ad detected (%@), auto-skipping...", uri);
+        dispatch_async(dispatch_get_main_queue(), ^{
+            if ([player respondsToSelector:@selector(skipToNextTrack)]) {
+                [(id<SPTPlayer>)player skipToNextTrack];
+            } else if ([player respondsToSelector:@selector(skipToNextTrackWithOptions:)]) {
+                [(id<SPTPlayer>)player skipToNextTrackWithOptions:nil];
+            }
+        });
+    }
+}
+
 @interface SGPlayerObserver : NSObject
 @end
 
 @implementation SGPlayerObserver
 - (void)player:(id)player stateDidChange:(id)state {
+    SGCheckAndSkipAd(player, state);
     report(state, NO);
 }
 @end
@@ -65,6 +118,7 @@ static SGPlayerObserver *sg_ownObserver;
 %hook _TtC23NowPlaying_PlatformImpl28StatefulPlayerImplementation
 - (void)player:(id)player stateDidChange:(id)state {
     %orig;
+    SGCheckAndSkipAd(player, state);
     static dispatch_once_t once;
     dispatch_once(&once, ^{
         SGLog(@"player state: from %@, a %@, on the main thread %d", [player class], [state class], NSThread.isMainThread);

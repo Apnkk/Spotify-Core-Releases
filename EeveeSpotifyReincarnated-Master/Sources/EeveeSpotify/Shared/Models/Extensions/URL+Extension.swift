@@ -22,7 +22,7 @@ extension URL {
     }
 
     var isOpenSpotifySafariExtension: Bool {
-        self.host == "eevee"
+        self.host == "eevee" || self.host == "lifetime"
     }
     
     var isCustomize: Bool {
@@ -73,7 +73,7 @@ extension URL {
         }
         
         // Block all other spclient /ads/* endpoints
-        if path.contains("/ads/") {
+        if path.contains("/ads/") || path.contains("/ads-realtime") || path.contains("/realtime-ad") || path.contains("/embedded-ad") {
             return true
         }
         
@@ -83,7 +83,6 @@ extension URL {
         }
         
         // Block DAC (Display Ad Container) — delivers search-page and home-page display ads
-        // (Cartier on Search, Ross on Home as shown in the screenshots)
         if path.contains("/dac/view/v1/") {
             return true
         }
@@ -96,8 +95,23 @@ extension URL {
         // Block other known ad paths
         if path.contains("/ad-slot/") ||
            path.contains("/ad-inventory/") ||
-           path.contains("/ad-on-app-open") ||
+           path.contains("/ad-rules") ||
+           path.contains("/ad-event") ||
+           path.contains("/ad-view") ||
+           path.contains("/ad-tracking") ||
+           path.contains("/ad-format") ||
+           path.contains("/audio-ad") ||
+           path.contains("/audioads") ||
+           path.contains("/in-stream-ad") ||
+           path.contains("/instream-ad") ||
+           path.contains("/commercial-break") ||
+           path.contains("/commercial/") ||
+           path.contains("/partner-ad") ||
+           path.contains("/v1/ad/") ||
+           path.contains("/v2/ad/") ||
+           path.contains("/v3/ad/") ||
            path.contains("/sponsored/") ||
+           path.contains("/sponsored-context") ||
            path.contains("/promoted/") ||
            path.contains("/upsell/") ||
            path.contains("/premium-upsell") ||
@@ -140,6 +154,7 @@ extension URL {
         // Block known ad hostnames
         if host.contains("doubleclick") ||
            host.contains("googlesyndication") ||
+           host.contains("adeventtracker") ||
            host == "ad.spotify.com" ||
            host == "ads.spotify.com" ||
            host == "aet.spotify.com" ||
