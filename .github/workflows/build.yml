@@ -73,7 +73,8 @@ jobs:
         id: versioning
         run: |
           BUILD_NUM="${{ github.run_number }}"
-          VER="0.22.${BUILD_NUM}"
+          OFFSET=32
+          VER="0.22.$((BUILD_NUM + OFFSET))"
           echo "$VER" > spoti.pw-main/version.txt
           echo "tag=v${VER}" >> $GITHUB_OUTPUT
           echo "version=${VER}" >> $GITHUB_OUTPUT
