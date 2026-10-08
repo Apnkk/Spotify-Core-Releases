@@ -12,8 +12,15 @@ enum SpotifyResponsePatcher {
     private static var _handledCustomizeTasks = Set<Int>()
 
     static var cachedCustomizeData: Data? {
-        get { lock.lock(); defer { lock.unlock() }; return _cachedCustomizeData }
-        set { lock.lock(); defer { lock.unlock() }; _cachedCustomizeData = newValue }
+        get {
+            lock.lock(); defer { lock.unlock() }
+            return _cachedCustomizeData ?? UserDefaults.cachedCustomizeData
+        }
+        set {
+            lock.lock(); defer { lock.unlock() }
+            _cachedCustomizeData = newValue
+            UserDefaults.cachedCustomizeData = newValue
+        }
     }
 
     static func markCustomizeTaskHandled(_ id: Int) {

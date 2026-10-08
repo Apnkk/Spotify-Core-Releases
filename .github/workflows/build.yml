@@ -33,11 +33,25 @@ jobs:
           mkdir -p ipa
           curl -L -o ipa/spotify.ipa "${{ github.event.inputs.ipa_url }}"
 
+      - name: Compute Build Version
+        id: versioning
+        run: |
+          BUILD_NUM="${{ github.run_number }}"
+          OFFSET=32
+          VER="0.22.$((BUILD_NUM + OFFSET))"
+          echo "$VER" > spoti.pw-main/version.txt
+          echo "tag=v${VER}" >> $GITHUB_OUTPUT
+          echo "version=${VER}" >> $GITHUB_OUTPUT
+          echo "build_num=$((BUILD_NUM + OFFSET))" >> $GITHUB_OUTPUT
+
       - name: Build EeveeSpotify Tweak
         run: |
           cd EeveeSpotifyReincarnated-Master
           chmod +x Tools/SwiftProtobufBuild/build-eeveeswiftprotobuf.sh
           export THEOS="$HOME/theos"
+          export VERSION="${{ steps.versioning.outputs.version }}"
+          export BUILD_NUMBER="${{ steps.versioning.outputs.build_num }}"
+          sed -i '' "s/^Version:.*/Version: ${{ steps.versioning.outputs.version }}/" control 2>/dev/null || sed -i "s/^Version:.*/Version: ${{ steps.versioning.outputs.version }}/" control 2>/dev/null || true
 
           make build-eeveeswiftprotobuf
 
@@ -68,16 +82,6 @@ jobs:
           esac
 
           make clean package
-
-      - name: Compute Build Version
-        id: versioning
-        run: |
-          BUILD_NUM="${{ github.run_number }}"
-          OFFSET=32
-          VER="0.22.$((BUILD_NUM + OFFSET))"
-          echo "$VER" > spoti.pw-main/version.txt
-          echo "tag=v${VER}" >> $GITHUB_OUTPUT
-          echo "version=${VER}" >> $GITHUB_OUTPUT
 
       - name: Build spoti.pw & Combine Tweaks into IPA
         run: |

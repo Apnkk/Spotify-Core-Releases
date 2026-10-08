@@ -8,7 +8,7 @@ enum Donation {
 
     private static let launchCountKey = "hysanRecoveryFundLaunchCount"
     private static let hasShownKey = "hysanRecoveryFundShown"
-    private static let donationURL = URL(string: "https://ko-fi.com/jaydenjcpy")!
+    private static let donationURL = URL(string: "https://github.com/Apnkk/Spotify-Core-Releases")!
     private static let showOnLaunches: Set<Int> = [5, 10]
 
     /// Disabled: completely silenced, no donation prompts or toasts

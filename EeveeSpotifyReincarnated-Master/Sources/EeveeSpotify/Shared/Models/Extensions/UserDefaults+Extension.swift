@@ -14,6 +14,7 @@ extension UserDefaults {
     private static let hasPatchedBootstrapKey = "eeveeHasPatchedBootstrap"
     private static let iconNamePrettifyKey = "iconNamePrettify"
     private static let cleanShareLinksKey = "cleanShareLinks"
+    private static let cachedCustomizeDataKey = "eeveeCachedCustomizeData"
 
     static var musixmatchToken: String {
         get {
@@ -100,4 +101,18 @@ extension UserDefaults {
             container.set(cleanShareLinks, forKey: cleanShareLinksKey)
         }
     }
+
+    /// Persisted copy of the last patched customize response body.
+    /// Replayed for 304 Not Modified responses on warm relaunches to prevent ad flags from re-enabling.
+    static var cachedCustomizeData: Data? {
+        get { container.data(forKey: cachedCustomizeDataKey) }
+        set {
+            if let newValue {
+                container.set(newValue, forKey: cachedCustomizeDataKey)
+            } else {
+                container.removeObject(forKey: cachedCustomizeDataKey)
+            }
+        }
+    }
 }
+

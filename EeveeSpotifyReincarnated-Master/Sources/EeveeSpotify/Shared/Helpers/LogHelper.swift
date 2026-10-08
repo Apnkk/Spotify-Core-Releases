@@ -17,3 +17,9 @@ struct LogHelper {
         os_log("%{public}@", log: log, type: .debug, "[EeveeSpotify] \(message)")
     }
 }
+
+func eeveeLog(_ format: String, _ args: CVarArg...) {
+    let message = args.isEmpty ? format : String(format: format, arguments: args)
+    NSLog("[EeveeSpotify] %@", message)
+}
+

@@ -56,7 +56,7 @@ extension URL {
     }
 
     var isPendragonFetchMessageList: Bool {
-        self.path.contains("pendragon") && self.path.contains("FetchMessageList")
+        self.path.contains("pendragon") && self.path.contains("FetchMessage")
     }
 
     var isPushkaTokens: Bool {

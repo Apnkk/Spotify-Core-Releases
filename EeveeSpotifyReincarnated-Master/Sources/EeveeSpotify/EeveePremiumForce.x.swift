@@ -35,8 +35,8 @@ private func forcedPremiumString(forKey key: String) -> String? {
     case "manager":                                return "1"
     case "nft-disabled":                           return "1"
 
-    case "streaming-rules":                        return nil
-    case "previous-streaming-rules":               return nil
+    case "streaming-rules":                        return ""
+    case "previous-streaming-rules":               return ""
     case "high-bitrate":                           return "1"
     case "shuffle":                                return "0"
     case "shuffle-mode":                           return "0"
