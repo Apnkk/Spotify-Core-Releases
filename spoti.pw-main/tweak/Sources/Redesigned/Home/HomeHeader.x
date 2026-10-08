@@ -98,6 +98,33 @@ static BOOL findHeader(UIView *view) {
     return NO;
 }
 
+static BOOL isAvatarView(UIView *view) {
+    if (!view) return NO;
+    if ([view.accessibilityIdentifier isEqualToString:@"Components.UI.SideDrawerButton"]) return YES;
+    NSString *cls = NSStringFromClass(view.class);
+    if ([cls containsString:@"AdaptiveFace"] || [cls containsString:@"Face"] || 
+        [cls containsString:@"SideDrawer"] || [cls containsString:@"Avatar"] || 
+        [cls containsString:@"Profile"]) {
+        return YES;
+    }
+    __block BOOL hasDrawerIdentifier = NO;
+    SGForEachView(view, ^(UIView *sub) {
+        if ([sub.accessibilityIdentifier isEqualToString:@"Components.UI.SideDrawerButton"]) {
+            hasDrawerIdentifier = YES;
+        }
+    });
+    if (hasDrawerIdentifier) return YES;
+    
+    // If it's NOT a pill/filter/scroll/mask view, it is the profile avatar
+    if (![cls containsString:@"Pill"] && 
+        ![cls containsString:@"FadeMask"] && 
+        ![cls containsString:@"ScrollView"] && 
+        ![cls containsString:@"Filter"]) {
+        return YES;
+    }
+    return NO;
+}
+
 static void layoutHeader(UIViewController *page) {
     UIView *view = page.viewIfLoaded;
     if (!view || !findHeader(view)) return;
@@ -105,12 +132,16 @@ static void layoutHeader(UIViewController *page) {
     UIStackView *stack = sg_stack;
     vanish(sg_scrim);
 
-    static Class faceClass;
-    if (!faceClass) faceClass = NSClassFromString(@"_TtC29ListeningActivity_ElementsKit21AdaptiveFaceContainer");
     UIView *face = nil;
     for (UIView *part in stack.arrangedSubviews) {
-        if (faceClass && [part isKindOfClass:faceClass]) face = part;
-        else vanish(part);
+        if (isAvatarView(part)) {
+            face = part;
+            face.alpha = 1.0;
+            face.userInteractionEnabled = YES;
+            face.accessibilityElementsHidden = NO;
+        } else {
+            vanish(part);
+        }
     }
     if (stack.semanticContentAttribute != UISemanticContentAttributeForceRightToLeft) {
         stack.semanticContentAttribute = UISemanticContentAttributeForceRightToLeft;
