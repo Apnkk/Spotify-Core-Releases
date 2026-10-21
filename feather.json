@@ -13,20 +13,20 @@
       "developerName": "Ares",
       "subtitle": "Spotify Lifetime Core v7.0.0 by Ares",
       "version": "7.0.0",
-      "versionDate": "2026-10-21T15:47:21Z",
+      "versionDate": "2026-10-21T16:19:32Z",
       "versionDescription": "Release v7.0.0: Spotify Lifetime Core by Ares Combined",
       "downloadURL": "https://github.com/Apnkk/Spotify-Core-Releases/releases/download/v7.0.0/Spotify_Eevee_SpotiPW_Combined.ipa",
       "localizedDescription": "Spotify Lifetime Core by Ares: word-synced lyrics, remote flags browser, zero ads, unlimited skips, 17 custom Ares app icons, pure AMOLED black theme, and Spotify Core enhancements.",
       "iconURL": "https://raw.githubusercontent.com/Apnkk/Spotify-Core-Releases/main/assets/ares_logo.png",
       "tintColor": "1DB954",
-      "size": 151645664,
+      "size": 152407912,
       "versions": [
         {
           "version": "7.0.0",
-          "date": "2026-10-21T15:47:21Z",
+          "date": "2026-10-21T16:19:32Z",
           "localizedDescription": "Release v7.0.0: Spotify Lifetime Core by Ares Combined",
           "downloadURL": "https://github.com/Apnkk/Spotify-Core-Releases/releases/download/v7.0.0/Spotify_Eevee_SpotiPW_Combined.ipa",
-          "size": 151645664
+          "size": 152407912
         }
       ]
     }
