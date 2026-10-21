@@ -13,20 +13,20 @@
       "developerName": "Ares",
       "subtitle": "Lifetime Premium v7.0.0 + Liquid Glass",
       "version": "7.0.0",
-      "versionDate": "2026-10-21T14:27:17Z",
+      "versionDate": "2026-10-21T14:54:52Z",
       "versionDescription": "Release v7.0.0: Lifetime Premium v7.0.0 + Spotify Core By Ares Combined",
       "downloadURL": "https://github.com/Apnkk/Spotify-Core-Releases/releases/download/v7.0.0/Spotify_Eevee_SpotiPW_Combined.ipa",
       "localizedDescription": "Lifetime Premium v7.0.0 features (word-synced lyrics, remote flags browser, zero ads, unlimited skips) fused with the revolutionary Liquid Glass interface, custom Ares themes, alternate icons, and audio DSP.",
       "iconURL": "https://raw.githubusercontent.com/Apnkk/Spotify-Core-Releases/main/assets/ares_logo.png",
       "tintColor": "1DB954",
-      "size": 152409260,
+      "size": 150495877,
       "versions": [
         {
           "version": "7.0.0",
-          "date": "2026-10-21T14:27:17Z",
+          "date": "2026-10-21T14:54:52Z",
           "localizedDescription": "Release v7.0.0: Lifetime Premium v7.0.0 + Spotify Core By Ares Combined",
           "downloadURL": "https://github.com/Apnkk/Spotify-Core-Releases/releases/download/v7.0.0/Spotify_Eevee_SpotiPW_Combined.ipa",
-          "size": 152409260
+          "size": 150495877
         }
       ]
     }
