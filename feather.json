@@ -2,7 +2,7 @@
   "name": "Spotify Core By Ares",
   "identifier": "com.ares.spotifycore",
   "sourceURL": "https://raw.githubusercontent.com/Apnkk/Spotify-Core-Releases/main/feather.json",
-  "subtitle": "Spotify Lifetime Core v7.0.0 by Ares",
+  "subtitle": "Lifetime Premium + Liquid Glass",
   "description": "Spotify Core By Ares official releases repository for Feather and AltStore.",
   "iconURL": "https://raw.githubusercontent.com/Apnkk/Spotify-Core-Releases/main/assets/ares_logo.png",
   "website": "https://aress.ovh",
@@ -11,22 +11,22 @@
       "name": "Spotify Core",
       "bundleIdentifier": "com.spotify.client",
       "developerName": "Ares",
-      "subtitle": "Spotify Lifetime Core v7.0.0 by Ares",
-      "version": "7.0.0",
-      "versionDate": "2026-10-21T16:19:32Z",
-      "versionDescription": "Release v7.0.0: Spotify Lifetime Core by Ares Combined",
-      "downloadURL": "https://github.com/Apnkk/Spotify-Core-Releases/releases/download/v7.0.0/Spotify_Eevee_SpotiPW_Combined.ipa",
-      "localizedDescription": "Spotify Lifetime Core by Ares: word-synced lyrics, remote flags browser, zero ads, unlimited skips, 17 custom Ares app icons, pure AMOLED black theme, and Spotify Core enhancements.",
+      "subtitle": "Lifetime Premium + Liquid Glass",
+      "version": "0.22.35",
+      "versionDate": "2026-10-08T19:48:52Z",
+      "versionDescription": "Release v0.22.35: Lifetime Premium + Spotify Core By Ares Combined",
+      "downloadURL": "https://github.com/Apnkk/Spotify-Core-Releases/releases/download/v0.22.35/Spotify_Eevee_SpotiPW_Combined.ipa",
+      "localizedDescription": "Lifetime Premium features (unlimited skips, zero ads, on-demand playback, lyrics) fused with the revolutionary Liquid Glass interface, custom Ares themes, alternate icons, and audio DSP.",
       "iconURL": "https://raw.githubusercontent.com/Apnkk/Spotify-Core-Releases/main/assets/ares_logo.png",
       "tintColor": "1DB954",
-      "size": 152407912,
+      "size": 147386381,
       "versions": [
         {
-          "version": "7.0.0",
-          "date": "2026-10-21T16:19:32Z",
-          "localizedDescription": "Release v7.0.0: Spotify Lifetime Core by Ares Combined",
-          "downloadURL": "https://github.com/Apnkk/Spotify-Core-Releases/releases/download/v7.0.0/Spotify_Eevee_SpotiPW_Combined.ipa",
-          "size": 152407912
+          "version": "0.22.35",
+          "date": "2026-10-08T19:48:52Z",
+          "localizedDescription": "Release v0.22.35: Lifetime Premium + Spotify Core By Ares Combined",
+          "downloadURL": "https://github.com/Apnkk/Spotify-Core-Releases/releases/download/v0.22.35/Spotify_Eevee_SpotiPW_Combined.ipa",
+          "size": 147386381
         }
       ]
     }

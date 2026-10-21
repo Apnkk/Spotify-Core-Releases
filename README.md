@@ -60,7 +60,8 @@ Everything you want in Spotify on iOS, with zero compromises:
 
 Grab the latest ready-to-install `.ipa` directly from the Releases page:
 
-👉 **[Download Latest Spotify Core By Ares IPA](https://github.com/Apnkk/Spotify-Core-Releases/releases/latest)**
+👉 **[Download Latest Spotify Core By Ares IPA (v0.22.35)](https://github.com/Apnkk/Spotify-Core-Releases/releases/download/v0.22.35/Spotify_Eevee_SpotiPW_Combined.ipa)**  
+🔗 **[Releases & Changelogs](https://github.com/Apnkk/Spotify-Core-Releases/releases/latest)**
 
 ---
 
