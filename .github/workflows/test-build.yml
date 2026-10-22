@@ -89,12 +89,6 @@ jobs:
           export THEOS="$HOME/theos"
           ./scripts/pipeline.sh "$IPA_PATH" --no-flex --name "Spotify Core" --extra-deb "$EEVEE_DEB" -o "$OUT_PATH"
 
-      - name: Upload IPA Artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: SpotifyCore
-          path: out/SpotifyCore.ipa
-
       - name: Release Test IPA (Private Pre-release)
         uses: softprops/action-gh-release@v2
         with:
