@@ -41,6 +41,7 @@ static NSString *noticeBody(NSString *version) {
 }
 
 static void offerWhenClear(NSInteger tries) {
+    return;
     if (sg_offered) return;
     NSString *version = SGUpdateVersion();
     if (!version || !SGEnabled(SGKeyUpdateNotice)) return;

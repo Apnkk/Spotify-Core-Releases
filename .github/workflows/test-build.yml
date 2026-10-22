@@ -1,0 +1,115 @@
+name: Test Build SpotifyCore Clean (Private Pre-release)
+
+on:
+  workflow_dispatch:
+    inputs:
+      ipa_url:
+        description: 'Direct download URL to decrypted Spotify IPA'
+        required: true
+        default: 'https://github.com/Apnkk/Spotify-Core-Releases/releases/download/source-ipa-9.1.92/com.spotify.client_9.1.92_und3fined.ipa'
+
+jobs:
+  build:
+    runs-on: macos-15
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: |
+          brew install make ldid dpkg
+          python3 -m venv "$RUNNER_TEMP/pyzule-venv"
+          "$RUNNER_TEMP/pyzule-venv/bin/python" -m pip install --upgrade pip
+          "$RUNNER_TEMP/pyzule-venv/bin/python" -m pip install "cyan @ git+https://github.com/asdfzxcvbn/pyzule-rw" pillow
+          echo "$RUNNER_TEMP/pyzule-venv/bin" >> "$GITHUB_PATH"
+
+      - name: Setup Theos
+        run: |
+          git clone --recursive https://github.com/theos/theos.git ~/theos
+
+      - name: Download Decrypted Spotify IPA
+        run: |
+          mkdir -p ipa
+          curl -L -o ipa/spotify.ipa "${{ github.event.inputs.ipa_url }}"
+
+      - name: Set Version
+        run: |
+          echo "0.52.0-test" > spoti.pw-main/version.txt
+
+      - name: Build EeveeSpotify Tweak
+        run: |
+          cd EeveeSpotifyReincarnated-Master
+          chmod +x Tools/SwiftProtobufBuild/build-eeveeswiftprotobuf.sh
+          export THEOS="$HOME/theos"
+          export VERSION="7.0.0"
+          export BUILD_NUMBER="1"
+          sed -i '' "s/^Version:.*/Version: 7.0.0/" control 2>/dev/null || sed -i "s/^Version:.*/Version: 7.0.0/" control 2>/dev/null || true
+
+          make build-eeveeswiftprotobuf
+
+          FRAMEWORK_DIR="$THEOS/lib/iphone/rootless/EeveeSwiftProtobuf.framework"
+          if [ ! -d "$FRAMEWORK_DIR" ]; then
+            FRAMEWORK_DIR="$THEOS/lib/iphone/roothide/EeveeSwiftProtobuf.framework"
+          fi
+
+          test -d "$FRAMEWORK_DIR" || {
+            echo "EeveeSwiftProtobuf.framework was not generated"
+            find "$THEOS/lib/iphone" -maxdepth 4 -iname '*SwiftProtobuf*' -print
+            exit 1
+          }
+
+          test -f "$FRAMEWORK_DIR/Modules/module.modulemap" || {
+            echo "EeveeSwiftProtobuf framework has no Swift module"
+            find "$FRAMEWORK_DIR" -maxdepth 4 -type f -print
+            exit 1
+          }
+
+          case "$FRAMEWORK_DIR" in
+            */roothide/*)
+              export THEOS_PACKAGE_SCHEME=roothide
+              ;;
+            *)
+              export THEOS_PACKAGE_SCHEME=rootless
+              ;;
+          esac
+
+          make clean package
+
+      - name: Build spoti.pw & Combine Tweaks into SpotifyCore.ipa
+        run: |
+          EEVEE_DEB="$(pwd)/$(ls EeveeSpotifyReincarnated-Master/packages/*.deb | head -n 1)"
+          test -f "$EEVEE_DEB" || { echo "EeveeSpotify deb not found"; exit 1; }
+          IPA_PATH="$(pwd)/ipa/spotify.ipa"
+          OUT_PATH="$(pwd)/out/SpotifyCore.ipa"
+          mkdir -p out
+          cd spoti.pw-main
+          chmod +x scripts/*.sh scripts/*.py
+          export THEOS="$HOME/theos"
+          ./scripts/pipeline.sh "$IPA_PATH" --no-flex --name "Spotify Core" --extra-deb "$EEVEE_DEB" -o "$OUT_PATH"
+
+      - name: Upload IPA Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: SpotifyCore
+          path: out/SpotifyCore.ipa
+
+      - name: Release Test IPA (Private Pre-release)
+        uses: softprops/action-gh-release@v2
+        with:
+          repository: Apnkk/Spotify-Core-Releases
+          tag_name: test-spotifycore-clean
+          name: "SpotifyCore Clean Test Build"
+          body: |
+            ### SpotifyCore Clean Test Build
+            * Nom du fichier : `SpotifyCore.ipa`
+            * Build 100% propre depuis les sources compilées (sans télémétrie Chroma, sans compte requis, zéro paywall)
+            * 17 Icônes personnalisées Ares accessibles depuis les réglages (Icône de l'application)
+            * Interface Redesigned UI Apple Music & Liquid Glass avec réglages Tab Bar
+            * Aucune alerte de version non supportée
+            
+            **Direct Download:** [SpotifyCore.ipa](https://github.com/Apnkk/Spotify-Core-Releases/releases/download/test-spotifycore-clean/SpotifyCore.ipa)
+          prerelease: true
+          files: out/SpotifyCore.ipa
+          token: ${{ secrets.RELEASE_TOKEN || secrets.GITHUB_TOKEN }}

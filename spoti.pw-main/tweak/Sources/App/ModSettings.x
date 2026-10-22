@@ -22,8 +22,7 @@
 #import "Shared/AudioEffects/AudioEffectsPage.h"
 #import "Shared/LiveActivity/LiveActivity.h"
 #import "App/About/About.h"
-#import "App/About/CreatorDiscord.h"
-#import "App/Donate/Donate.h"
+#import "App/About/AppIconSettings.h"
 #import "Pages.h"
 
 static const CGFloat kRowHeight = 56;
@@ -34,21 +33,11 @@ static SGModRow *pageRow(NSString *title, NSString *symbol, UIViewController *(^
 }
 
 static UIViewController *modSettingsPage(void) {
-    // Opening the page is the only thing that asks; the cache keeps it to once every six hours.
-    SGCheckForUpdate(NO);
     NSMutableArray<SGModSection *> *sections = [NSMutableArray array];
-    // A build the lock screen cannot open leads the page, above the tweaks: it is the one thing here
-    // that no switch can put right, and it is worth reading before anything else.
-    SGModRow *signing = SGSigningWarningRow();
-    if (signing) [sections addObject:SGSection(nil, @[signing])];
-    [sections addObject:SGSection(nil, @[SGDonateRow()])];
     SGModRow *mod = pageRow(@"Mod", @"info.circle", ^UIViewController *{ return SGAboutPage(); });
     mod.value = ^NSString *{ return @(SG_VERSION); };
-    // The audio effects work on the sound, so both looks have them, with what they are doing beside the chevron.
     SGModRow *audioEffects = pageRow(@"Audio effects", @"slider.vertical.3", ^UIViewController *{ return SGDSPSettingsPage(); });
     audioEffects.value = ^NSString *{ return SGDSPSummary(); };
-    // Home & Library holds only the native look's switches, so the redesign has no such page; the
-    // Live Activity works under both, and only where ActivityKit's card does.
     NSMutableArray<SGModRow *> *parts = [NSMutableArray arrayWithArray:@[
         pageRow(@"Navbar", @"dock.rectangle", ^UIViewController *{ return SGNavbarPage(); }),
         pageRow(@"Player", @"play.circle", ^UIViewController *{ return SGPlayerSettingsPage(); }),
@@ -71,7 +60,9 @@ static UIViewController *modSettingsPage(void) {
             pageRow(@"All flags", @"flag", ^UIViewController *{ return SGAllFlagsPage(); }),
             mod,
         ]),
-        SGCreatorSection(),
+        SGSection(@"Icône de l'application", @[
+            SGAppIconRow(),
+        ]),
     ]];
     return [[SGModPage alloc] initWithTitle:@"Spotify Core By Ares" intro:nil sections:sections footer:@"Modified by Ares — Spotify Lifetime Edition"];
 }

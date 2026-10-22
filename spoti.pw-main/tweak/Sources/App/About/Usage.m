@@ -40,7 +40,7 @@ static NSString *today(void) {
 }
 
 BOOL SGUsageOwed(void) {
-    return usageOn() && ![[NSUserDefaults.standardUserDefaults stringForKey:kAsked] isEqualToString:today()];
+    return NO;
 }
 
 // Marked when asked, not when answered: a day spoti.pw is down costs that day's count, not a request

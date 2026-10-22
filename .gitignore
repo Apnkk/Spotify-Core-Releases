@@ -1,0 +1,9 @@
+*.ipa
+*.zip
+out/
+build/
+Payload/
+.DS_Store
+vendor/
+scripts/
+
