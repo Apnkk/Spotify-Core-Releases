@@ -27,6 +27,8 @@ static atomic_int sg_spatialBack = 1;        // 0=Off, 1=Slow, 2=Medium, 3=Fast
 static atomic_int sg_spatialWidth = 115;     // 50..150
 
 static atomic_int sg_relYawBits = 0;         // float bits in radians (-pi..pi)
+static atomic_bool sg_spatialConnected = false;
+static atomic_bool sg_spatialPreviewOn = false;
 static atomic_int sg_vocalPeakBits = 0;
 static atomic_int sg_instPeakBits = 0;
 
@@ -75,6 +77,10 @@ float SGSpatialVoiceRelativeYaw(void) {
     return loadFloat(&sg_relYawBits);
 }
 
+BOOL SGSpatialHeadTrackingConnected(void) {
+    return atomic_load_explicit(&sg_spatialConnected, memory_order_relaxed);
+}
+
 float SGSingLiveVocalPeak(void) {
     return loadFloat(&sg_vocalPeakBits);
 }
@@ -113,10 +119,11 @@ NSString *SGSpatialVoiceSummary(void) {
 }
 
 - (void)syncState {
-    BOOL want = SGSpatialVoiceEnabled() && SGSingEnabled();
+    BOOL want = (SGSpatialVoiceEnabled() && SGSingEnabled()) || atomic_load_explicit(&sg_spatialPreviewOn, memory_order_relaxed);
     if (!want) {
         if (_motion.isDeviceMotionActive) [_motion stopDeviceMotionUpdates];
         _hasAnchor = NO;
+        atomic_store_explicit(&sg_spatialConnected, false, memory_order_relaxed);
         storeFloat(&sg_relYawBits, 0.0f);
         return;
     }
@@ -134,6 +141,7 @@ NSString *SGSpatialVoiceSummary(void) {
 }
 
 - (void)handleMotion:(CMDeviceMotion *)motion {
+    atomic_store_explicit(&sg_spatialConnected, true, memory_order_relaxed);
     double yaw = motion.attitude.yaw;
     if (!_hasAnchor) {
         _anchorYaw = yaw;
@@ -154,14 +162,23 @@ NSString *SGSpatialVoiceSummary(void) {
 
 - (void)headphoneMotionManagerDidConnect:(CMHeadphoneMotionManager *)manager {
     _hasAnchor = NO;
+    atomic_store_explicit(&sg_spatialConnected, true, memory_order_relaxed);
 }
 
 - (void)headphoneMotionManagerDidDisconnect:(CMHeadphoneMotionManager *)manager {
     _hasAnchor = NO;
+    atomic_store_explicit(&sg_spatialConnected, false, memory_order_relaxed);
     storeFloat(&sg_relYawBits, 0.0f);
 }
 
 @end
+
+void SGSpatialSetPreviewActive(BOOL active) {
+    atomic_store_explicit(&sg_spatialPreviewOn, active, memory_order_relaxed);
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [[SGSpatialMotionTracker shared] syncState];
+    });
+}
 
 void SGSingNotifySettingsChanged(void) {
     atomic_store_explicit(&sg_singFeatureOn, SGSingEnabled(), memory_order_relaxed);

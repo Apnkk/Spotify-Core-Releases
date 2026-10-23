@@ -38,7 +38,17 @@ jobs:
         run: |
           echo "0.52.0-test" > spoti.pw-main/version.txt
 
+      - name: Cache EeveeSpotify & Audio DSP Static Library
+        id: cache-eevee
+        uses: actions/cache@v4
+        with:
+          path: |
+            EeveeSpotifyReincarnated-Master/packages
+            spoti.pw-main/vendor/audio/build
+          key: eevee-audio-${{ runner.os }}-${{ hashFiles('EeveeSpotifyReincarnated-Master/Sources/**', 'EeveeSpotifyReincarnated-Master/Makefile', 'spoti.pw-main/vendor/audio/**') }}
+
       - name: Build EeveeSpotify Tweak
+        if: steps.cache-eevee.outputs.cache-hit != 'true'
         run: |
           cd EeveeSpotifyReincarnated-Master
           chmod +x Tools/SwiftProtobufBuild/build-eeveeswiftprotobuf.sh

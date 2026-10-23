@@ -24,6 +24,8 @@ void SGSingNotifySettingsChanged(void);
 
 // Live telemetry for the Spatial Voice stage and Sing ring animations.
 float SGSpatialVoiceRelativeYaw(void);
+BOOL SGSpatialHeadTrackingConnected(void);
+void SGSpatialSetPreviewActive(BOOL active);
 float SGSingLiveVocalPeak(void);
 float SGSingLiveInstrumentPeak(void);
 
