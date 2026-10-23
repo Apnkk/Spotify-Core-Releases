@@ -42,7 +42,15 @@ jobs:
         run: |
           echo "0.52.0-test" > spoti.pw-main/version.txt
 
+      - name: Restore Cached EeveeSpotify
+        id: cache-eevee
+        uses: actions/cache/restore@v4
+        with:
+          path: EeveeSpotifyReincarnated-Master/packages
+          key: eevee-deb-${{ runner.os }}-${{ hashFiles('EeveeSpotifyReincarnated-Master/Sources/**', 'EeveeSpotifyReincarnated-Master/Makefile') }}
+
       - name: Build EeveeSpotify Tweak
+        if: steps.cache-eevee.outputs.cache-hit != 'true'
         run: |
           cd EeveeSpotifyReincarnated-Master
           chmod +x Tools/SwiftProtobufBuild/build-eeveeswiftprotobuf.sh
@@ -80,6 +88,13 @@ jobs:
           esac
 
           make clean package
+
+      - name: Save Cached EeveeSpotify
+        if: steps.cache-eevee.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v4
+        with:
+          path: EeveeSpotifyReincarnated-Master/packages
+          key: eevee-deb-${{ runner.os }}-${{ hashFiles('EeveeSpotifyReincarnated-Master/Sources/**', 'EeveeSpotifyReincarnated-Master/Makefile') }}
 
       - name: Build spoti.pw & Combine Tweaks into SpotifyCore.ipa
         run: |
