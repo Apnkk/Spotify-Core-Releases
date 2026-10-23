@@ -87,7 +87,7 @@ jobs:
           cd spoti.pw-main
           chmod +x scripts/*.sh scripts/*.py
           export THEOS="$HOME/theos"
-          ./scripts/pipeline.sh "$IPA_PATH" --no-flex --name "Spotify Core" --extra-deb "$EEVEE_DEB" -o "$OUT_PATH"
+          ./scripts/pipeline.sh "$IPA_PATH" --no-flex --extra-deb "$EEVEE_DEB" -o "$OUT_PATH"
 
       - name: Release Test IPA (Private Pre-release)
         uses: softprops/action-gh-release@v2

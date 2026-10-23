@@ -1,15 +1,13 @@
-// A double tap on the player, read against the grid Settings draws: the recognizer, what each cell does
-// and the playback controller it does it with. Which view of the player it goes on is each look's own
-// hookup (Native/Player/PlayerGestures.x, Redesigned/Player/PlayerGestures.x), which call SGGestureAttach.
-//
-// The player already answers a sideways swipe with the next track and a vertical drag with the
-// cards below, which leaves the double tap as the one gesture free to take.
+// A double tap on the player, read against the grid Settings draws, plus Hold edge to play faster.
 #import "Core/SGCore.h"
 #import "Gestures.h"
+#import "Shared/Player/SpeedPitch.h"
 #import "Headers/SPTNowPlayingPlaybackController.h"
 
 static __weak SPTNowPlayingPlaybackControllerImplementation *sg_player;
 static void (^sg_observer)(SGGestureAction action);
+static double sg_savedSpeedBeforeHold = 1.0;
+static BOOL sg_holdingEdge = NO;
 
 void SGGestureSetObserver(void (^observer)(SGGestureAction action)) {
     sg_observer = [observer copy];
@@ -17,7 +15,7 @@ void SGGestureSetObserver(void (^observer)(SGGestureAction action)) {
 
 #pragma mark - what a cell does
 
-static void perform(SGGestureAction action) {
+void SGGesturePerformAction(SGGestureAction action) {
     SPTNowPlayingPlaybackControllerImplementation *player = sg_player;
     if (!player) return;
     if (action != SGGestureNothing && sg_observer) sg_observer(action);
@@ -58,11 +56,7 @@ static void perform(SGGestureAction action) {
 @implementation SGGestureTarget
 
 - (void)doubleTapped:(UITapGestureRecognizer *)tap {
-    // The recognizer outlives the switch: it stays on the player once attached, so the switch is
-    // read here as well and the gesture stops the moment it goes off.
     if (!SGFlag(SGKeyGestures, NO)) return;
-    // The host is the queue scrolled sideways, so a tap lands in content coordinates a few million
-    // points out; its bounds origin is that scroll, and taking it off gives the point on screen.
     UIView *host = tap.view;
     CGRect visible = host.bounds;
     CGPoint point = [tap locationInView:host];
@@ -71,7 +65,34 @@ static void perform(SGGestureAction action) {
     NSInteger cell = SGGestureCellAt(point, visible.size);
     NSArray<NSNumber *> *zones = SGGestureZones();
     if (cell < 0 || cell >= (NSInteger)zones.count) return;
-    perform((SGGestureAction)zones[(NSUInteger)cell].integerValue);
+    SGGesturePerformAction((SGGestureAction)zones[(NSUInteger)cell].integerValue);
+}
+
+- (void)edgeHeld:(UILongPressGestureRecognizer *)hold {
+    if (!SGFlag(SGKeyGestureHold, NO)) return;
+    UIView *host = hold.view;
+    if (!host) return;
+    if (hold.state == UIGestureRecognizerStateBegan) {
+        CGRect visible = host.bounds;
+        CGPoint point = [hold locationInView:host];
+        point.x -= visible.origin.x;
+        CGFloat edgeWidth = MAX(48.0, visible.size.width * 0.22);
+        if (point.x > edgeWidth && point.x < visible.size.width - edgeWidth) return;
+        sg_savedSpeedBeforeHold = SGPlayerSpeed();
+        sg_holdingEdge = YES;
+        SGSetPlayerSpeed(SGGestureHoldSpeed());
+        UIImpactFeedbackGenerator *gen = [[UIImpactFeedbackGenerator alloc] initWithStyle:UIImpactFeedbackStyleMedium];
+        [gen impactOccurred];
+    } else if (hold.state == UIGestureRecognizerStateEnded ||
+               hold.state == UIGestureRecognizerStateCancelled ||
+               hold.state == UIGestureRecognizerStateFailed) {
+        if (sg_holdingEdge) {
+            sg_holdingEdge = NO;
+            SGSetPlayerSpeed(sg_savedSpeedBeforeHold);
+            UIImpactFeedbackGenerator *gen = [[UIImpactFeedbackGenerator alloc] initWithStyle:UIImpactFeedbackStyleLight];
+            [gen impactOccurred];
+        }
+    }
 }
 
 @end
@@ -83,8 +104,6 @@ static SGGestureTarget *target(void) {
     return shared;
 }
 
-// Spotify's own single tap on the player scrolls it to the cards below, and would fire on the first
-// of a pair as well; every one above the artwork is asked to wait for the double tap to miss.
 static void yieldSingleTaps(UIView *host, UITapGestureRecognizer *tap) {
     for (UIView *view = host; view; view = view.superview) {
         for (UIGestureRecognizer *other in view.gestureRecognizers) {
@@ -95,10 +114,8 @@ static void yieldSingleTaps(UIView *host, UITapGestureRecognizer *tap) {
     }
 }
 
-static char kTapKey, kSeenKey;
+static char kTapKey, kHoldKey, kSeenKey;
 
-// Spotify adds its own recognizers as the player's controllers load, which is not ordered against
-// this hook: the count of what stands above the artwork is watched so a later one still yields.
 static NSUInteger tapsAbove(UIView *host) {
     NSUInteger count = 0;
     for (UIView *view = host; view; view = view.superview) count += view.gestureRecognizers.count;
@@ -106,7 +123,18 @@ static NSUInteger tapsAbove(UIView *host) {
 }
 
 void SGGestureAttach(UIView *host) {
-    if (!host || !SGFlag(SGKeyGestures, NO)) return;
+    if (!host) return;
+    if (SGFlag(SGKeyGestureHold, NO)) {
+        UILongPressGestureRecognizer *hold = objc_getAssociatedObject(host, &kHoldKey);
+        if (!hold) {
+            hold = [[UILongPressGestureRecognizer alloc] initWithTarget:target() action:@selector(edgeHeld:)];
+            hold.minimumPressDuration = 0.28;
+            hold.cancelsTouchesInView = NO;
+            [host addGestureRecognizer:hold];
+            objc_setAssociatedObject(host, &kHoldKey, hold, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+        }
+    }
+    if (!SGFlag(SGKeyGestures, NO)) return;
     UITapGestureRecognizer *tap = objc_getAssociatedObject(host, &kTapKey);
     if (!tap) {
         tap = [[UITapGestureRecognizer alloc] initWithTarget:target() action:@selector(doubleTapped:)];
@@ -131,9 +159,6 @@ void SGGestureAttach(UIView *host) {
 }
 %end
 
-// A single tap on the cover is Spotify's way into the tilt mode, the artwork alone in 3D. That is
-// the half of a double tap that misses, so while the zones are on it would open on the way to every
-// gesture; the tap goes back to Spotify with the switch.
 %ctor {
     %init;
     SGRequireClasses(@[@"SPTNowPlayingPlaybackControllerImplementation"]);

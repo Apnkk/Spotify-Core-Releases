@@ -1,17 +1,4 @@
-// Settings: a Mod Settings row at the end of Spotify's settings list opens the mod's own page: the
-// Appearance card with Redesigned UI, then a page per part of Spotify, each holding what that part
-// offers in the stored look (App/Pages.m: Navbar, Player, and Home & Library for the native look), Audio
-// effects (Shared/AudioEffects, in either look and applying straight away), Privacy & clutter
-// and Labs, All flags, a searchable list of every flag with an override per flag, and Mod, the
-// build, its updates and links. The same row leads the side drawer's list (trees/test6.txt), above
-// Your plan, so the page is a tap from Home, and holding Home on the tab bar opens it too. The tweaks read the switches when they run, so a change
-// shows after Spotify restarts; the tab editor on the Navbar page applies as soon as the bar lays
-// out again.
-//
-// Tree (trees/settings.txt): SettingsListViewController.view > SettingsListCollectionView of
-//   Element_List cells 402x56: 24pt icon at x 12, 13pt white title and 11pt grey subtitle at
-//   x 48, 12pt chevron on the right. A pushed page (trees/settings notifications opened.txt) is a
-//   UITableView bg #121212: header with an 11pt grey description at (16, 24), 53pt cells with the
+// Settings: a Mod Settings row at the end of Spotify's settings list opens the mod's own page.
 #import "Core/SGCore.h"
 #import "Settings/SGPage.h"
 #import "Settings/SGPageStyle.h"
@@ -21,6 +8,14 @@
 #import "Shared/Flags/Flags.h"
 #import "Shared/AudioEffects/AudioEffectsPage.h"
 #import "Shared/LiveActivity/LiveActivity.h"
+#import "Shared/Sing/Sing.h"
+#import "Shared/AutoMix/AutoMix.h"
+#import "Shared/Gestures/Gestures.h"
+#import "Shared/Haptics/Haptics.h"
+#import "Shared/Stats/Stats.h"
+#import "Shared/LocalFiles/LocalFiles.h"
+#import "Shared/Player/PlayerSettings.h"
+#import "Redesigned/Player/Visualizer.h"
 #import "App/About/About.h"
 #import "App/About/AppIconSettings.h"
 #import "Pages.h"
@@ -34,24 +29,67 @@ static SGModRow *pageRow(NSString *title, NSString *symbol, UIViewController *(^
 
 static UIViewController *modSettingsPage(void) {
     NSMutableArray<SGModSection *> *sections = [NSMutableArray array];
-    SGModRow *mod = pageRow(@"Mod", @"info.circle", ^UIViewController *{ return SGAboutPage(); });
-    mod.value = ^NSString *{ return @(SG_VERSION); };
+    BOOL redesigned = SGRedesignedUIStored();
+
+    // 1. Screens & Look
+    NSMutableArray<SGModRow *> *screens = [NSMutableArray arrayWithArray:@[
+        pageRow(@"Tab bar", @"dock.rectangle", ^UIViewController *{ return SGNavbarPage(); }),
+        pageRow(@"Home", @"house", ^UIViewController *{ return redesigned ? SGRHomeSettingsPage() : SGHomeSettingsPage(); }),
+        pageRow(@"Player", @"play.circle", ^UIViewController *{ return SGPlayerSettingsPage(); }),
+        pageRow(@"Lyrics", @"quote.bubble", ^UIViewController *{ return SGLyricsSettingsPage(); }),
+    ]];
+    if (redesigned) {
+        [screens addObject:pageRow(@"Albums", @"square.stack", ^UIViewController *{ return SGRAlbumsSettingsPage(); })];
+        [screens addObject:pageRow(@"Artists", @"music.mic", ^UIViewController *{ return SGRArtistsSettingsPage(); })];
+    }
+
+    // 2. Sound & Playback (Sing, Audio effects, Spatial voice, AutoMix)
+    SGModRow *singRow = pageRow(@"Sing", @"mic.fill", ^UIViewController *{ return SGSingSettingsPage(); });
+    singRow.value = ^NSString *{ return SGSingSummary(); };
+
     SGModRow *audioEffects = pageRow(@"Audio effects", @"slider.vertical.3", ^UIViewController *{ return SGDSPSettingsPage(); });
     audioEffects.value = ^NSString *{ return SGDSPSummary(); };
-    NSMutableArray<SGModRow *> *parts = [NSMutableArray arrayWithArray:@[
-        pageRow(@"Navbar", @"dock.rectangle", ^UIViewController *{ return SGNavbarPage(); }),
-        pageRow(@"Player", @"play.circle", ^UIViewController *{ return SGPlayerSettingsPage(); }),
-        audioEffects,
-    ]];
+
+    SGModRow *spatialVoice = pageRow(@"Spatial voice", @"person.wave.2.fill", ^UIViewController *{ return SGSpatialVoiceSettingsPage(); });
+    spatialVoice.value = ^NSString *{ return SGSpatialVoiceSummary(); };
+
+    SGModRow *autoMix = pageRow(@"AutoMix", @"waveform.path.ecg.rectangle", ^UIViewController *{ return SGAutoMixSettingsPage(); });
+    autoMix.value = ^NSString *{ return SGAutoMixSummary(); };
+
+    NSArray<SGModRow *> *soundRows = @[singRow, audioEffects, spatialVoice, autoMix];
+
+    // 3. Device & Experience (Live Activity, AirPods gestures, Listening stats, Lock screen, Vibrations, Local files)
+    NSMutableArray<SGModRow *> *deviceRows = [NSMutableArray array];
     if (@available(iOS 17.0, *)) {
         SGModRow *liveActivity = pageRow(@"Live Activity", @"platter.filled.top.iphone", ^UIViewController *{ return SGLiveActivitySettingsPage(); });
         liveActivity.value = ^NSString *{ return SGLiveActivitySummary(); };
-        [parts addObject:liveActivity];
+        [deviceRows addObject:liveActivity];
     }
-    if (!SGRedesignedUIStored()) [parts addObject:pageRow(@"Home & Library", @"house", ^UIViewController *{ return SGHomeSettingsPage(); })];
+    SGModRow *headGestures = pageRow(@"AirPods gestures", @"airpodspro", ^UIViewController *{ return SGHeadGesturesSettingsPage(); });
+    headGestures.value = ^NSString *{ return SGHeadGesturesSummary(); };
+    [deviceRows addObject:headGestures];
+
+    SGModRow *statsRow = pageRow(@"Listening stats", @"chart.bar.fill", ^UIViewController *{ return SGStatsSettingsPage(); });
+    statsRow.value = ^NSString *{ return SGStatsSummary(); };
+    [deviceRows addObject:statsRow];
+
+    [deviceRows addObject:pageRow(@"Lock screen", @"lock", ^UIViewController *{ return SGLockScreenWidgetPage(); })];
+
+    SGModRow *vibrationsRow = pageRow(@"Vibrations", @"iphone.radiowaves.left.and.right", ^UIViewController *{ return SGVibrationsSettingsPage(); });
+    vibrationsRow.value = ^NSString *{ return SGVibrationsSummary(); };
+    [deviceRows addObject:vibrationsRow];
+
+    [deviceRows addObject:pageRow(@"Local files", @"folder.badge.gearshape", ^UIViewController *{ return SGLocalFilesEditorPage(); })];
+
+    // 4. Privacy, Labs, Flags & Mod
+    SGModRow *mod = pageRow(@"Mod", @"info.circle", ^UIViewController *{ return SGAboutPage(); });
+    mod.value = ^NSString *{ return @(SG_VERSION); };
+
     [sections addObjectsFromArray:@[
         SGAppearanceSection(),
-        SGSection(nil, parts),
+        SGSection(@"Screens", screens),
+        SGSection(@"Sound & Mixing", soundRows),
+        SGSection(@"Experience", deviceRows),
         SGSection(nil, @[
             pageRow(@"Privacy & clutter", @"hand.raised", ^UIViewController *{ return SGPrivacySettingsPage(); }),
             pageRow(@"Labs", @"testtube.2", ^UIViewController *{ return SGLabsPage(); }),
@@ -64,13 +102,11 @@ static UIViewController *modSettingsPage(void) {
             SGAppIconRow(),
         ]),
     ]];
-    return [[SGModPage alloc] initWithTitle:@"Spotify Core By Ares" intro:nil sections:sections footer:@"Modified by Ares — Spotify Lifetime Edition"];
+    return [[SGModPage alloc] initWithTitle:@"Spotify Core By Ares" intro:nil sections:sections footer:@"Modified by Ares — Spotify Lifetime Edition (v0.51.0)"];
 }
 
 #pragma mark - row in the settings list and the side drawer
 
-// The last row of Spotify's settings list, chevron and all, or the first of the side drawer's,
-// drawn like the drawer's own rows: no chevron, icon and title 4pt further in.
 @interface SGModSettingsRow : UIControl
 @property (nonatomic) BOOL drawer;
 @end
@@ -117,8 +153,6 @@ static UINavigationController *navigationIn(UIViewController *page) {
     return nil;
 }
 
-// The drawer is presented over the app, so its row closes it first and pushes onto the stack it
-// was covering, the way the drawer's own rows open their pages.
 - (void)open {
     UIViewController *owner = nil;
     for (UIResponder *r = self; r && !owner; r = r.nextResponder) {
@@ -136,7 +170,6 @@ static UINavigationController *navigationIn(UIViewController *page) {
 
 @end
 
-// The tab bar's controller holds no stack itself; the selected tab's sits among its parent's children.
 void SGOpenModSettings(UIView *source) {
     UIViewController *owner = nil;
     for (UIResponder *r = source; r && !owner; r = r.nextResponder) {
@@ -153,8 +186,6 @@ __attribute__((visibility("default"))) void SGOpenModSettingsDirect(UIViewContro
     SGShowPage(nav.topViewController ?: presenting, modSettingsPage());
 }
 
-// At the end of the settings list, or above the first row of the drawer's, with the inset for it
-// added again whenever Spotify resets the inset.
 static void placeRow(UICollectionView *list, SGModSettingsRow *row) {
     SGAdoptFonts(list, row);
     CGFloat bottom = list.contentSize.height;
@@ -170,14 +201,6 @@ static void placeRow(UICollectionView *list, SGModSettingsRow *row) {
     list.contentInset = inset;
 }
 
-// Media quality, Playback, Account and most of the rest of settings are the same controller class
-// as the list they were opened from, which is why the row turned up at the end of all of them.
-// What is on the navigation stack is not that controller though: every page in the app is wrapped
-// in a MusicAppPageHostingViewController (trees/settings notifications opened.txt), and Spotify
-// pushes a settings sub page as a page of its own, leaving the list it came from on the stack
-// underneath. So the settings list inside the lowest wrapper that holds one is the list the row
-// belongs at the end of, and a controller with no stack to be found on keeps the row rather than
-// losing it.
 static UIViewController *settingsListIn(UIViewController *page, Class kind) {
     if ([page isKindOfClass:kind]) return page;
     for (UIViewController *child in page.childViewControllers) {
@@ -204,8 +227,6 @@ static BOOL isSettingsRoot(UIViewController *list) {
     SGForEachView(((UIViewController *)self).view, ^(UIView *sub) {
         if (![sub isKindOfClass:UICollectionView.class]) return;
         SGModSettingsRow *row = objc_getAssociatedObject(sub, &kRowKey);
-        // A page that laid itself out before it was on the stack looked like the list for as long
-        // as that took; the row goes again as soon as it can be seen for what it is.
         if (!root) {
             [row removeFromSuperview];
             objc_setAssociatedObject(sub, &kRowKey, nil, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
@@ -219,8 +240,6 @@ static BOOL isSettingsRoot(UIViewController *list) {
 }
 %end
 
-// The drawer's list (trees/test6.txt: SideDrawerListCollectionView under the profile header, Your
-// plan its first cell) is one of several collection views on the page, so it is found by name.
 %hook _TtC23SideDrawer_ListPageImpl18ListViewController
 - (void)viewDidLayoutSubviews {
     %orig;
@@ -235,7 +254,6 @@ static BOOL isSettingsRoot(UIViewController *list) {
 }
 %end
 
-// The lists lay out after their controllers and again whenever their content changes.
 %hook UICollectionView
 - (void)layoutSubviews {
     %orig;

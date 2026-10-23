@@ -7,6 +7,8 @@
 #import "Shared/Lyrics/Lyrics.h"
 #import "Shared/LyricsMeanings/Meanings.h"
 #import "Shared/Player/PlayerSettings.h"
+#import "Shared/Fonts/Fonts.h"
+#import "Shared/LocalFiles/LocalFiles.h"
 #import "Native/Appearance/Appearance.h"
 #import "Native/Navbar/Navbar.h"
 #import "Native/NowPlayingBar/NowPlayingBar.h"
@@ -16,17 +18,16 @@
 #import "Redesigned/Lyrics/LyricsText.h"
 #import "Redesigned/Navbar/Navbar.h"
 #import "Redesigned/NowPlayingBar/NowPlayingBar.h"
+#import "Redesigned/Player/Visualizer.h"
 #import "Redesigned/Kit/SGRAccent.h"
 #import "About/AppIconSettings.h"
 
-NSString *const SGRedesignedUIInfo = @"The newest version of spoti.pw, leaning towards Apple Music's style. It is not compatible with the legacy look's settings.\n\nThe legacy look gives you more freedom, yet still looks like Spotify.";
+NSString *const SGRedesignedUIInfo = @"The newest version of Spotify Core, leaning towards Apple Music's Liquid Glass style. It is not compatible with the legacy look's settings.\n\nThe legacy look gives you more freedom, yet still looks like Spotify.";
 
 void SGSetRedesignedUI(BOOL on) {
     SGSetEnabled(SGKeyRedesign, on);
 }
 
-// The whole look changes hands at launch, so the switch asks for the restart straight away rather than
-// leaving Spotify half in the old look.
 static void offerRestart(BOOL on) {
     UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"Restart Spotify"
         message:on ? @"The redesign takes over when Spotify starts again. Spotify closes now; open it again to see it." : @"Spotify's own look comes back when Spotify starts again. Spotify closes now; open it again to see it."
@@ -36,8 +37,6 @@ static void offerRestart(BOOL on) {
     [SGTopController() presentViewController:alert animated:YES completion:nil];
 }
 
-// Below iOS 26 the row is not a switch: Liquid Glass is the redesign, and the system draws it from
-// that version on, so the row reads out what is missing and the card carries the native look's rows alone.
 static SGModRow *unavailableRow(void) {
     SGModRow *row = SGStatActionRow(@"Redesigned UI", nil, ^NSString *{ return @"Needs iOS 26"; }, ^{
         UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"Redesigned UI"
@@ -49,10 +48,17 @@ static SGModRow *unavailableRow(void) {
     return SGWithSymbol(row, @"sparkles");
 }
 
+static SGModRow *fontRow(void) {
+    SGModRow *row = SGWithSymbol(SGPageRow(@"Font", ^UIViewController *{ return SGFontSettingsPage(); }), @"textformat");
+    row.value = ^NSString *{ return SGFontSummary(); };
+    return row;
+}
+
 SGModSection *SGAppearanceSection(void) {
     if (!SGRedesignAvailable()) {
         NSMutableArray<SGModRow *> *rows = [NSMutableArray arrayWithObject:unavailableRow()];
         [rows addObjectsFromArray:SGNativeAppearanceRows()];
+        [rows addObject:fontRow()];
         [rows addObject:SGAppIconRow()];
         return SGNotedSection(@"Appearance", rows, @"Changes apply after you restart Spotify.");
     }
@@ -65,6 +71,10 @@ SGModSection *SGAppearanceSection(void) {
     };
     NSMutableArray<SGModRow *> *rows = [NSMutableArray arrayWithObject:SGWithSymbol(redesign, @"sparkles")];
     [rows addObjectsFromArray:SGRedesignedUIStored() ? SGRAppearanceRows() : SGNativeAppearanceRows()];
+    if (SGRedesignedUIStored()) {
+        [rows addObject:SGWithSymbol(SGOptionRow(@"Accent matches now playing", @"Tint controls with the current artwork's dominant colour", SGRKeyAccentFollows), @"eyedropper.halffull")];
+    }
+    [rows addObject:fontRow()];
     [rows addObject:SGAppIconRow()];
     return SGNotedSection(@"Appearance", rows, @"Changes apply after you restart Spotify.");
 }
@@ -73,14 +83,22 @@ UIViewController *SGNavbarPage(void) {
     return SGRedesignedUIStored() ? SGRNavbarSettingsPage() : SGNavbarSettingsPage();
 }
 
-// Pronunciation, translation, word sweeping and line meanings exist only in the redesign's lyrics view.
-static UIViewController *lyricsPage(void) {
+UIViewController *SGLyricsSettingsPage(void) {
     BOOL redesigned = SGRedesignedUIStored();
     NSMutableArray<SGModRow *> *more = [NSMutableArray arrayWithObject:SGLockScreenLyricsRow()];
     if (!redesigned) [more insertObject:SGGlassLyricsRow() atIndex:0];
     NSMutableArray<SGModSection *> *sections = [NSMutableArray arrayWithObject:SGLyricsSourcesSection(redesigned)];
     if (redesigned) {
-        [sections addObject:SGSection(@"Display", @[SGLyricsWordTimingRow(), SGRLyricsTextSizesRow(), SGLyricsTranslationLanguageRow(), SGLyricsMeaningsRow()])];
+        SGModRow *stylePage = SGWithSymbol(SGPageRow(@"Lyrics style", ^UIViewController *{ return SGRLyricsStyleSettingsPage(); }), @"slider.horizontal.below.rectangle");
+        SGModRow *landscapeRow = SGWithSymbol(SGSwitchRow(@"Landscape lyrics", @"Side-by-side cover and synced lyrics when rotating iPhone", SGRKeyPlayerLandscape), @"rectangle.split.2x1");
+        [sections addObject:SGSection(@"Display", @[
+            SGLyricsWordTimingRow(),
+            SGRLyricsTextSizesRow(),
+            stylePage,
+            SGLyricsTranslationLanguageRow(),
+            SGLyricsMeaningsRow(),
+            landscapeRow,
+        ])];
     }
     [sections addObject:SGSection(nil, more)];
     return [[SGModPage alloc] initWithTitle:@"Lyrics" intro:SGRestartNote sections:sections footer:nil];
@@ -91,11 +109,15 @@ UIViewController *SGPlayerSettingsPage(void) {
     blocked.value = ^NSString *{
         return SGFlag(SGKeyArtistBlock, NO) ? @(SGBlockedArtists().count).stringValue : @"Off";
     };
+    SGModRow *headGestures = SGWithSymbol(SGPageRow(@"AirPods gestures", ^UIViewController *{ return SGHeadGesturesSettingsPage(); }), @"airpodspro");
+    headGestures.value = ^NSString *{ return SGHeadGesturesSummary(); };
+
     BOOL native = !SGRedesignedUIStored();
 
     NSMutableArray<SGModSection *> *sections = [NSMutableArray arrayWithObject:SGSection(nil, @[
         SGWithSymbol(SGPageRow(@"Gestures", ^UIViewController *{ return SGGesturesSettingsPage(); }), @"hand.tap"),
-        SGWithSymbol(SGPageRow(@"Lyrics", ^UIViewController *{ return lyricsPage(); }), @"quote.bubble"),
+        headGestures,
+        SGWithSymbol(SGPageRow(@"Lyrics", ^UIViewController *{ return SGLyricsSettingsPage(); }), @"quote.bubble"),
         SGWithSymbol(blocked, @"person.crop.circle.badge.xmark"),
     ])];
     NSMutableArray<SGModRow *> *pages = [NSMutableArray array];
@@ -104,11 +126,16 @@ UIViewController *SGPlayerSettingsPage(void) {
         [pages addObject:SGWithSymbol(SGPageRow(@"Queue & devices", ^UIViewController *{ return SGQueueSettingsPage(); }), @"text.line.first.and.arrowtriangle.forward")];
     } else {
         [pages addObject:SGWithSymbol(SGPageRow(@"Now playing", ^UIViewController *{ return SGRNowPlayingBarSettingsPage(); }), @"rectangle.bottomthird.inset.filled")];
+        [pages addObject:SGWithSymbol(SGPageRow(@"Fluid artwork", ^UIViewController *{ return SGRFluidArtworkSettingsPage(); }), @"drop.halffull")];
+        SGModRow *visRow = SGWithSymbol(SGPageRow(@"Visualizer", ^UIViewController *{ return SGRVisualizerSettingsPage(); }), @"waveform.path.ecg");
+        visRow.value = ^NSString *{ return SGRVisualizerSummary(); };
+        [pages addObject:visRow];
+        [pages addObject:SGWithSymbol(SGOptionRow(@"Volume slider in player", @"Show a system volume bar below playback controls", SGRKeyPlayerVolume), @"speaker.wave.3.fill")];
     }
     [pages addObject:SGWithSymbol(SGPageRow(@"Lock screen widget", ^UIViewController *{ return SGLockScreenWidgetPage(); }), @"lock")];
+    [pages addObject:SGWithSymbol(SGPageRow(@"Local files (Edit Info)", ^UIViewController *{ return SGLocalFilesEditorPage(); }), @"folder.badge.gearshape")];
     [sections addObject:SGSection(nil, pages)];
     if (native) [sections addObjectsFromArray:SGNativePlayerScreenSections()];
-    // Vibrations hook Spotify's own controls and its audio, so they answer under either look.
     [sections addObjectsFromArray:SGVibrationsSections()];
 
     return [[SGModPage alloc] initWithTitle:@"Player" intro:SGRestartNote sections:sections footer:nil];

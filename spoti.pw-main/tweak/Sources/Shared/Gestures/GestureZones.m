@@ -15,6 +15,10 @@ NSArray<NSNumber *> *SGGestureStepChoices(void) {
     return @[@5, @10, @15, @30];
 }
 
+NSArray<NSNumber *> *SGGestureHoldSpeedChoices(void) {
+    return @[@1.5, @1.75, @2.0, @2.5];
+}
+
 NSInteger SGGestureSplit(void) {
     return SGInt(SGKeyGestureSplit, 1);   // three columns
 }
@@ -22,6 +26,15 @@ NSInteger SGGestureSplit(void) {
 NSInteger SGGestureStepChoice(void) {
     NSInteger choice = SGInt(SGKeyGestureStep, 1);   // ten seconds
     return choice >= 0 && choice < (NSInteger)SGGestureStepChoices().count ? choice : 1;
+}
+
+NSInteger SGGestureHoldSpeedChoice(void) {
+    NSInteger choice = SGInt(SGKeyGestureHoldSpeed, 2); // 2.0x
+    return choice >= 0 && choice < (NSInteger)SGGestureHoldSpeedChoices().count ? choice : 2;
+}
+
+double SGGestureHoldSpeed(void) {
+    return SGGestureHoldSpeedChoices()[(NSUInteger)SGGestureHoldSpeedChoice()].doubleValue;
 }
 
 void SGGestureGrid(NSInteger *columns, NSInteger *rows) {

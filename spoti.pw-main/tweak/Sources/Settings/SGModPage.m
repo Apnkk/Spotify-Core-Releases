@@ -199,6 +199,13 @@ SGModRow *SGSliderRow(NSString *title, NSString *subtitle, double minimum, doubl
     return row;
 }
 
+SGModRow *SGCustomViewRow(UIView *view, CGFloat height) {
+    SGModRow *row = [SGModRow new];
+    row.customView = view;
+    row.customHeight = height;
+    return row;
+}
+
 SGModRow *SGLinkRow(NSString *title, NSString *subtitle, NSString *url) {
     return SGActionRow(title, subtitle, ^{ SGOpenURL(url); });
 }
@@ -411,6 +418,7 @@ static const CGFloat kSliderTop = 12, kSliderLine = 18, kSliderSubtitle = 14, kS
 @implementation SGModPage {
     NSArray<SGModSection *> *_sections;
     NSArray<NSArray<SGModRow *> *> *_shown;   // each section's rows that show now (SGModRow.visible)
+    NSArray<SGModSection *> *(^_build)(void);
     UIView *_intro;
     UIView *_footer;
     NSTimer *_ticker;
@@ -420,14 +428,31 @@ static const CGFloat kSliderTop = 12, kSliderLine = 18, kSliderSubtitle = 14, kS
 - (instancetype)initWithTitle:(NSString *)title intro:(NSString *)intro sections:(NSArray<SGModSection *> *)sections footer:(NSString *)footer {
     if (!(self = [super initWithStyle:UITableViewStyleInsetGrouped])) return nil;
     self.title = title;
-    _sections = sections;
-    _shown = [self rowsToShow];
     _intro = intro ? SGNote(intro) : nil;
     _footer = footer ? SGNote(footer) : nil;
-    // A page row reads its value out when the page appears rather than on the ticker, so only the
-    // rows whose numbers climb on their own keep one running.
-    for (SGModSection *s in sections) for (SGModRow *row in s.rows) _live |= row.value && !row.page;
+    [self adopt:sections];
     return self;
+}
+
+- (instancetype)initWithTitle:(NSString *)title build:(NSArray<SGModSection *> *(^)(void))build {
+    if (!(self = [super initWithStyle:UITableViewStyleInsetGrouped])) return nil;
+    self.title = title;
+    _build = [build copy];
+    [self adopt:_build ? _build() : @[]];
+    return self;
+}
+
+- (void)adopt:(NSArray<SGModSection *> *)sections {
+    _sections = sections ?: @[];
+    _shown = [self rowsToShow];
+    _live = NO;
+    for (SGModSection *s in _sections) for (SGModRow *row in s.rows) _live |= row.value && !row.page;
+}
+
+- (void)rebuild {
+    if (_build) [self adopt:_build()];
+    else _shown = [self rowsToShow];
+    if (self.isViewLoaded) [self.tableView reloadData];
 }
 
 - (NSArray<NSArray<SGModRow *> *> *)rowsToShow {
@@ -444,6 +469,11 @@ static const CGFloat kSliderTop = 12, kSliderLine = 18, kSliderSubtitle = 14, kS
 // scrolled into view: it opens under the switch that brought it, which may be the page's last row. Answers
 // whether anything moved; `done` runs once it has, and only then.
 - (BOOL)showRowsThen:(void (^)(void))done {
+    if (_build) {
+        [self rebuild];
+        if (done) done();
+        return YES;
+    }
     NSArray<NSArray<SGModRow *> *> *next = [self rowsToShow];
     if ([next isEqualToArray:_shown]) return NO;
     NSMutableArray<NSIndexPath *> *gone = [NSMutableArray array], *coming = [NSMutableArray array];
@@ -495,8 +525,7 @@ static const CGFloat kSliderTop = 12, kSliderLine = 18, kSliderSubtitle = 14, kS
 
 - (void)onCreatorUpdated {
     dispatch_async(dispatch_get_main_queue(), ^{
-        self->_shown = [self rowsToShow];
-        [self.tableView reloadData];
+        [self rebuild];
     });
 }
 
@@ -513,14 +542,8 @@ static const CGFloat kSliderTop = 12, kSliderLine = 18, kSliderSubtitle = 14, kS
 
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
-    // Reloaded whether or not anything ticks: a choice row is showing whatever was picked on the
-    // page it opened, which is gone by the time this one comes back, and may bring rows or take them.
-    _shown = [self rowsToShow];
-    [self.tableView reloadData];
+    [self rebuild];
     if (!_live) return;
-    // The counters climb while the page is open; the labels are written straight into the cells so
-    // that a reload never lands under a switch being dragged. A cancelled back swipe appears the
-    // page again without it ever disappearing, so the old timer goes first.
     [_ticker invalidate];
     _ticker = [NSTimer scheduledTimerWithTimeInterval:1 target:self selector:@selector(readValues) userInfo:nil repeats:YES];
 }
@@ -533,7 +556,9 @@ static const CGFloat kSliderTop = 12, kSliderLine = 18, kSliderSubtitle = 14, kS
 
 - (void)readValues {
     for (UITableViewCell *cell in self.tableView.visibleCells) {
-        SGModRow *row = [self rowAt:[self.tableView indexPathForCell:cell]];
+        NSIndexPath *ip = [self.tableView indexPathForCell:cell];
+        if (!ip) continue;
+        SGModRow *row = [self rowAt:ip];
         UILabel *label = (UILabel *)cell.accessoryView;
         if (!row.value || row.page || ![label isKindOfClass:UILabel.class]) continue;
         label.text = row.value();
@@ -557,6 +582,7 @@ static const CGFloat kSliderTop = 12, kSliderLine = 18, kSliderSubtitle = 14, kS
 // A slider row is laid out by hand; every other row sizes itself.
 - (CGFloat)tableView:(UITableView *)table heightForRowAtIndexPath:(NSIndexPath *)path {
     SGModRow *row = [self rowAt:path];
+    if (row.customView) return row.customHeight > 0 ? row.customHeight : 200;
     return row.number ? [SGModSliderCell heightFor:row] : UITableViewAutomaticDimension;
 }
 
@@ -581,6 +607,16 @@ static const CGFloat kSliderTop = 12, kSliderLine = 18, kSliderSubtitle = 14, kS
 
 - (UITableViewCell *)tableView:(UITableView *)table cellForRowAtIndexPath:(NSIndexPath *)path {
     SGModRow *row = [self rowAt:path];
+    if (row.customView) {
+        UITableViewCell *cell = [table dequeueReusableCellWithIdentifier:@"custom"] ?: [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"custom"];
+        cell.selectionStyle = UITableViewCellSelectionStyleNone;
+        cell.backgroundColor = SGCardBackground();
+        for (UIView *sub in cell.contentView.subviews) [sub removeFromSuperview];
+        row.customView.frame = cell.contentView.bounds;
+        row.customView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+        [cell.contentView addSubview:row.customView];
+        return cell;
+    }
     if (row.number) {
         SGModSliderCell *cell = [table dequeueReusableCellWithIdentifier:@"slider"] ?: [[SGModSliderCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"slider"];
         cell.backgroundColor = SGCardBackground();
@@ -609,7 +645,6 @@ static const CGFloat kSliderTop = 12, kSliderLine = 18, kSliderSubtitle = 14, kS
         cell.selectionStyle = row.action ? UITableViewCellSelectionStyleDefault : UITableViewCellSelectionStyleNone;
     } else if (row.key) {
         BOOL locked = flagRowLocked(row);
-        // A lock that beats an override shows over one; the others give way to it.
         BOOL beats = NO;
         if (locked) SGLockedFlagValue(row.key, &beats);
         BOOL showsLock = locked && (beats || !SGFlagOverride(row.key));
@@ -627,7 +662,6 @@ static const CGFloat kSliderTop = 12, kSliderLine = 18, kSliderSubtitle = 14, kS
             toggle = plain;
         }
         toggle.enabled = !locked;
-        // A disabled switch would swallow the tap; letting it through is what gets the row asked.
         toggle.userInteractionEnabled = !locked;
         [toggle addTarget:self action:@selector(toggled:) forControlEvents:UIControlEventValueChanged];
         cell.accessoryView = row.info ? [self infoButtonBeside:toggle] : toggle;
@@ -699,11 +733,9 @@ static const CGFloat kSliderTop = 12, kSliderLine = 18, kSliderSubtitle = 14, kS
     if (row.flag) SGSetFlagOverride(row.key, on ? @(!row.forceOff) : nil);
     else SGSetEnabled(row.key, on);
     if (row.changed) row.changed(on);
-    // A glowing switch is let finish its slide before the reload puts a new one in its place; rows coming
-    // or going are let finish first too.
     NSTimeInterval wait = [toggle isKindOfClass:SGGlowSwitch.class] ? 0.45 : 0;
     void (^reload)(void) = ^{
-        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(wait * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{ [self.tableView reloadData]; });
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(wait * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{ [self rebuild]; });
     };
     BOOL moved = [self showRowsThen:row.changed ? reload : nil];
     if (row.changed && !moved) reload();

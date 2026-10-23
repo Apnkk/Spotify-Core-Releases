@@ -42,16 +42,22 @@
 @property (nonatomic, copy) double (^number)(void);
 @property (nonatomic, copy) void (^setNumber)(double value);
 @property (nonatomic, copy) NSString *(^format)(double value);
+// An embedded interactive preview or custom stage view inside a card section.
+@property (nonatomic, strong) UIView *customView;
+@property (nonatomic) CGFloat customHeight;
 @end
 
 @interface SGModSection : NSObject
 @property (nonatomic, copy) NSString *title;
 @property (nonatomic, copy) NSArray<SGModRow *> *rows;
 @property (nonatomic, copy) NSString *footer;
+@property (nonatomic, copy) NSString *footerLink;
 @end
 
 @interface SGModPage : SGPage
 - (instancetype)initWithTitle:(NSString *)title intro:(NSString *)intro sections:(NSArray<SGModSection *> *)sections footer:(NSString *)footer;
+- (instancetype)initWithTitle:(NSString *)title build:(NSArray<SGModSection *> *(^)(void))build;
+- (void)rebuild;
 @end
 
 // The intro of every page whose switches the hooks read at launch.
@@ -78,6 +84,7 @@ SGModRow *SGChoiceRow(NSString *title, NSString *subtitle, NSString *key, NSArra
 // changes applies while it is dragged. `subtitle` may be nil.
 SGModRow *SGSliderRow(NSString *title, NSString *subtitle, double minimum, double maximum, double step,
                       double (^get)(void), void (^set)(double value), NSString *(^format)(double value));
+SGModRow *SGCustomViewRow(UIView *view, CGFloat height);
 SGModRow *SGLinkRow(NSString *title, NSString *subtitle, NSString *url);
 SGModRow *SGStatActionRow(NSString *title, NSString *subtitle, NSString *(^value)(void), void (^action)(void));
 SGModSection *SGSection(NSString *title, NSArray<SGModRow *> *rows);

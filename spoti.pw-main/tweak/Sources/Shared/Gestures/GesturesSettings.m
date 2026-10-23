@@ -1,5 +1,5 @@
 // The Gestures page: the grid over a player-shaped preview, a cell tapped to say what a double tap
-// there does, under it the split, the seek step and a reset.
+// there does, under it the split, the seek step, Hold edge to play faster, and a reset.
 #import "Core/SGCore.h"
 #import "Settings/SGPage.h"
 #import "Settings/SGPageStyle.h"
@@ -17,8 +17,6 @@ static NSString *cellLabel(SGGestureAction action) {
 
 #pragma mark - the preview
 
-// The grid the player is read against, drawn at the size of a phone and read the same way, so what
-// the page shows and what the double tap does cannot drift apart.
 @interface SGZoneGridView : UIView
 @property (nonatomic, copy) void (^picked)(NSInteger cell);
 - (void)reload;
@@ -116,14 +114,12 @@ static NSString *cellLabel(SGGestureAction action) {
     _grid = [[SGZoneGridView alloc] initWithFrame:CGRectMake(0, 12, 0, kPreviewHeight)];
     __weak typeof(self) weakSelf = self;
     _grid.picked = ^(NSInteger cell) { [weakSelf pickActionFor:cell]; };
-    // The table sets its header's width itself, and the grid follows it, so the header never has to
-    // be handed back during layout: doing that lays the table out again and never settles.
     _grid.autoresizingMask = UIViewAutoresizingFlexibleWidth;
     _header = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 0, kPreviewHeight + 24)];
     _header.autoresizingMask = UIViewAutoresizingFlexibleWidth;
     [_header addSubview:_grid];
     self.tableView.tableHeaderView = _header;
-    _footer = SGNote(@"Spotify's own buttons keep their taps.");
+    _footer = SGNote(@"Spotify's own buttons keep their taps. Press and hold the left or right edge of the player to speed up playback while held.");
     self.tableView.tableFooterView = _footer;
 }
 
@@ -160,13 +156,14 @@ static NSString *cellLabel(SGGestureAction action) {
 }
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)table {
-    return 4;
+    return 5;
 }
 
 - (NSInteger)tableView:(UITableView *)table numberOfRowsInSection:(NSInteger)section {
     switch (section) {
         case 1: return (NSInteger)SGGestureSplitNames().count;
         case 2: return (NSInteger)SGGestureStepChoices().count;
+        case 3: return 1 + (NSInteger)SGGestureHoldSpeedChoices().count;
         default: return 1;
     }
 }
@@ -174,11 +171,12 @@ static NSString *cellLabel(SGGestureAction action) {
 - (UIView *)tableView:(UITableView *)table viewForHeaderInSection:(NSInteger)section {
     if (section == 1) return SGSectionHeader(table, @"Split");
     if (section == 2) return SGSectionHeader(table, @"Seek step");
+    if (section == 3) return SGSectionHeader(table, @"Hold edge to play faster");
     return nil;
 }
 
 - (CGFloat)tableView:(UITableView *)table heightForHeaderInSection:(NSInteger)section {
-    return section == 1 || section == 2 ? SGSectionHeaderHeight : SGSectionGap;
+    return (section >= 1 && section <= 3) ? SGSectionHeaderHeight : SGSectionGap;
 }
 
 - (CGFloat)tableView:(UITableView *)table heightForFooterInSection:(NSInteger)section {
@@ -211,6 +209,27 @@ static NSString *cellLabel(SGGestureAction action) {
             }
             break;
         }
+        case 3: {
+            if (path.row == 0) {
+                SGFillCell(cell, @"Hold edge for faster playback", @"Press and hold the left or right edge of the player", nil, nil);
+                UISwitch *toggle = [UISwitch new];
+                toggle.onTintColor = SGGreen();
+                toggle.on = SGFlag(SGKeyGestureHold, NO);
+                [toggle addTarget:self action:@selector(holdToggled:) forControlEvents:UIControlEventValueChanged];
+                cell.accessoryView = toggle;
+            } else {
+                NSUInteger idx = (NSUInteger)(path.row - 1);
+                NSNumber *spd = SGGestureHoldSpeedChoices()[idx];
+                SGFillCell(cell, [NSString stringWithFormat:@"%@×", spd], nil, nil, nil);
+                cell.selectionStyle = UITableViewCellSelectionStyleDefault;
+                if ((NSInteger)idx == SGGestureHoldSpeedChoice()) {
+                    UIImageView *tick = SGSymbolView(@"checkmark", 13, UIImageSymbolWeightSemibold, 16);
+                    tick.tintColor = SGGreen();
+                    cell.accessoryView = tick;
+                }
+            }
+            break;
+        }
         default:
             SGFillCell(cell, @"Start over", nil, nil, @"arrow.uturn.backward");
             cell.selectionStyle = UITableViewCellSelectionStyleDefault;
@@ -223,13 +242,18 @@ static NSString *cellLabel(SGGestureAction action) {
     [table deselectRowAtIndexPath:path animated:YES];
     if (path.section == 1) SGSetInt(SGKeyGestureSplit, path.row);
     else if (path.section == 2) SGSetInt(SGKeyGestureStep, path.row);
-    else if (path.section == 3) SGResetGestureZones();
+    else if (path.section == 3 && path.row >= 1) SGSetInt(SGKeyGestureHoldSpeed, path.row - 1);
+    else if (path.section == 4) SGResetGestureZones();
     else return;
     [self refresh];
 }
 
 - (void)toggled:(UISwitch *)toggle {
     SGSetEnabled(SGKeyGestures, toggle.on);
+}
+
+- (void)holdToggled:(UISwitch *)toggle {
+    SGSetEnabled(SGKeyGestureHold, toggle.on);
 }
 
 @end
