@@ -1,5 +1,6 @@
 // Apple Music-style Sing microphone button & vertical vocal slider capsule inside SGRKaraokeView.
 #import "Core/SGCore.h"
+#import "Settings/SGPageStyle.h"
 #import "Shared/Sing/Sing.h"
 #import "Redesigned/Kit/SGRKit.h"
 #import "Redesigned/Lyrics/SGRKaraokeView.h"

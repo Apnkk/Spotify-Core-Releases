@@ -76,7 +76,7 @@ NSString *SGRVisualizerSummary(void) {
 - (void)tick:(CADisplayLink *)link {
     BOOL paused = SGPlayerState().isPaused;
     double spd = (double)SGInt(SGRKeyVisualizerSpeed, 100) / 100.0;
-    double audioBoost = SGFlag(SGRKeyVisualizerAudio, YES) ? (1.0 + SGSingLiveVocalPeak() * 1.4 + SGSingLiveInstPeak() * 1.2) : 1.0;
+    double audioBoost = SGFlag(SGRKeyVisualizerAudio, YES) ? (1.0 + SGSingLiveVocalPeak() * 1.4 + SGSingLiveInstrumentPeak() * 1.2) : 1.0;
     if (!paused) {
         _time += link.duration * spd * audioBoost;
     }
@@ -98,7 +98,7 @@ NSString *SGRVisualizerSummary(void) {
     [baseCol getRed:&br green:&bg blue:&bb alpha:&ba];
 
     float audioPulse = SGFlag(SGRKeyVisualizerAudio, YES)
-        ? (0.15f + 0.85f * fmaxf(SGSingLiveVocalPeak(), SGSingLiveInstPeak()))
+        ? (0.15f + 0.85f * fmaxf(SGSingLiveVocalPeak(), SGSingLiveInstrumentPeak()))
         : (0.4f + 0.3f * sinf((float)_time * 1.7f));
 
     // Rich dark background wash
@@ -179,7 +179,6 @@ NSString *SGRVisualizerSummary(void) {
     }
     if (!vol) {
         vol = [[MPVolumeView alloc] initWithFrame:CGRectZero];
-        vol.showsRouteButton = NO;
         vol.tintColor = UIColor.whiteColor;
         objc_setAssociatedObject(host, &kVolumeSliderKey, vol, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
         [host addSubview:vol];
