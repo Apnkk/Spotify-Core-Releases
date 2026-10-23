@@ -8,6 +8,9 @@ UIColor *SGRed(void);
 UIColor *SGDiscordColor(void);
 UIColor *SGPageBackground(void);
 UIColor *SGCardBackground(void);
+static inline UIColor *SGPageBackgroundColor(void) { return SGPageBackground(); }
+static inline UIColor *SGCardSurfaceColor(void) { return SGCardBackground(); }
+static inline UIColor *SGHairlineColor(void) { return [UIColor colorWithWhite:1.0 alpha:0.08]; }
 UIFont *SGTitleFont(void);
 UIFont *SGSubtitleFont(void);
 // Takes the 13pt and 11pt fonts off Spotify's own settings list, once, so the pages match it.

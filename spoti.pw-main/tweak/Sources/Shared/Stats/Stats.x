@@ -441,7 +441,7 @@ static NSMutableDictionary<NSString *, NSString *> *sg_uriToImageMap(void) {
 
 - (void)pillTapped:(UIButton *)sender {
     if (sender.tag == _selected) return;
-    SGPlayFeedback(SGFeedbackTap);
+    [[UISelectionFeedbackGenerator new] selectionChanged];
     [self setSelectedPeriod:sender.tag];
     if (self.periodChanged) self.periodChanged(sender.tag);
 }

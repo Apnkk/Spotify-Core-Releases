@@ -38,14 +38,12 @@ jobs:
         run: |
           echo "0.52.0-test" > spoti.pw-main/version.txt
 
-      - name: Cache EeveeSpotify & Audio DSP Static Library
+      - name: Restore Cached EeveeSpotify
         id: cache-eevee
-        uses: actions/cache@v4
+        uses: actions/cache/restore@v4
         with:
-          path: |
-            EeveeSpotifyReincarnated-Master/packages
-            spoti.pw-main/vendor/audio/build
-          key: eevee-audio-${{ runner.os }}-${{ hashFiles('EeveeSpotifyReincarnated-Master/Sources/**', 'EeveeSpotifyReincarnated-Master/Makefile', 'spoti.pw-main/vendor/audio/**') }}
+          path: EeveeSpotifyReincarnated-Master/packages
+          key: eevee-deb-${{ runner.os }}-${{ hashFiles('EeveeSpotifyReincarnated-Master/Sources/**', 'EeveeSpotifyReincarnated-Master/Makefile') }}
 
       - name: Build EeveeSpotify Tweak
         if: steps.cache-eevee.outputs.cache-hit != 'true'
@@ -86,6 +84,13 @@ jobs:
           esac
 
           make clean package
+
+      - name: Save Cached EeveeSpotify
+        if: steps.cache-eevee.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v4
+        with:
+          path: EeveeSpotifyReincarnated-Master/packages
+          key: eevee-deb-${{ runner.os }}-${{ hashFiles('EeveeSpotifyReincarnated-Master/Sources/**', 'EeveeSpotifyReincarnated-Master/Makefile') }}
 
       - name: Build spoti.pw & Combine Tweaks into SpotifyCore.ipa
         run: |
