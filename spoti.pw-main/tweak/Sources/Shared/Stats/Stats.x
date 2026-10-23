@@ -298,13 +298,7 @@ static NSMutableDictionary<NSString *, NSString *> *sg_uriToImageMap(void) {
     if (!title.length) title = state.track.metadata[@"title"];
     if (!artist.length) artist = state.track.metadata[@"artist_name"];
 
-    NSString *imgURL = nil;
-    if ([state.track respondsToSelector:@selector(imageURL)] && state.track.imageURL) {
-        imgURL = SGNormalizeSpotifyImageURL(SGURIString(state.track.imageURL));
-    }
-    if (!imgURL.length) {
-        imgURL = SGNormalizeSpotifyImageURL(state.track.metadata[@"image_xlarge_url"] ?: state.track.metadata[@"image_url"]);
-    }
+    NSString *imgURL = SGNormalizeSpotifyImageURL(state.track.metadata[@"image_xlarge_url"] ?: state.track.metadata[@"image_url"]);
 
     if (_activeURI && ![_activeURI isEqualToString:uri]) {
         [self flushCurrentTrack];
