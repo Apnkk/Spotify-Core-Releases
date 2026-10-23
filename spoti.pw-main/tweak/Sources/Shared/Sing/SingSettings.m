@@ -99,7 +99,7 @@
 - (void)refreshState {
     BOOL on = SGSingActive();
     float lvl = SGSingVocalLevel();
-    UIImageSymbolConfiguration *cfg = [UIImageSymbolConfiguration configurationWithPointSize:14 weight:UIFontWeightSemibold];
+    UIImageSymbolConfiguration *cfg = [UIImageSymbolConfiguration configurationWithPointSize:14 weight:UIImageSymbolWeightSemibold];
     [_micBtn setImage:[UIImage systemImageNamed:(on ? @"mic.fill" : @"mic") withConfiguration:cfg] forState:UIControlStateNormal];
     [_micBtn setTitle:(on ? @" Sing On" : @" Sing Off") forState:UIControlStateNormal];
     _micBtn.titleLabel.font = [UIFont systemFontOfSize:13 weight:UIFontWeightSemibold];

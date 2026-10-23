@@ -47,7 +47,7 @@
 
 #pragma mark - Storage & Watcher
 
-@interface SGStatsStore : NSObject
+@interface SGStatsStore : NSObject <SGPlayerStateObserver>
 @property (nonatomic, readonly) NSArray<SGPlayEntry *> *entries;
 + (instancetype)shared;
 - (void)recordTrackURI:(NSString *)uri title:(NSString *)title artist:(NSString *)artist album:(NSString *)album seconds:(double)sec at:(NSTimeInterval)ts;
@@ -66,6 +66,7 @@
     double _accumulatedSeconds;
     NSTimeInterval _lastTick;
     BOOL _wasPlaying;
+    NSTimer *_tickTimer;
 }
 
 + (instancetype)shared {
@@ -86,11 +87,17 @@
     _entries = [NSMutableArray array];
     [self loadFromDisk];
 
-    __weak typeof(self) weakSelf = self;
-    SGPlayerObserve(^(SPTPlayerState *state) {
-        [weakSelf handlePlayerState:state];
-    });
+    SGAddPlayerStateObserver(self);
+    _tickTimer = [NSTimer scheduledTimerWithTimeInterval:5.0 target:self selector:@selector(pollCurrentState) userInfo:nil repeats:YES];
     return self;
+}
+
+- (void)pollCurrentState {
+    [self handlePlayerState:SGPlayerState()];
+}
+
+- (void)playerStateDidChange:(SPTPlayerState *)state {
+    [self handlePlayerState:state];
 }
 
 - (NSArray<SGPlayEntry *> *)entries {
@@ -138,11 +145,10 @@
 
     NSString *uri = SGURIString(state.track.URI) ?: @"";
     NSString *title = [state.track respondsToSelector:@selector(trackTitle)] ? state.track.trackTitle : nil;
-    NSString *artist = [state.track respondsToSelector:@selector(artistTitle)] ? state.track.artistTitle : nil;
-    NSString *album = [state.track respondsToSelector:@selector(albumTitle)] ? state.track.albumTitle : nil;
+    NSString *artist = [state.track respondsToSelector:@selector(artistName)] ? state.track.artistName : nil;
+    NSString *album = state.track.metadata[@"album_title"];
     if (!title.length) title = state.track.metadata[@"title"];
     if (!artist.length) artist = state.track.metadata[@"artist_name"];
-    if (!album.length) album = state.track.metadata[@"album_title"];
 
     if (_activeURI && ![_activeURI isEqualToString:uri]) {
         [self flushCurrentTrack];

@@ -188,7 +188,6 @@ static float sg_itdLine[kSGSingMaxDelaySamples];
 static uint32_t sg_itdWrite = 0;
 static float sg_roomBufL[kSGSingRoomDelayL], sg_roomBufR[kSGSingRoomDelayR];
 static uint32_t sg_roomIdxL = 0, sg_roomIdxR = 0;
-static uint64_t sg_layoutPacked = 0;
 
 static void processSingAndSpatial(float *left, float *right, UInt32 frames) {
     BOOL singActive = atomic_load_explicit(&sg_singFeatureOn, memory_order_relaxed) &&
