@@ -128,10 +128,16 @@ jobs:
               * `Music app top bar` & `Music app icons` (SF Symbols)
               * `Lyrics line under the cover` (Paroles synchronisées sous la pochette)
               * `Drag to open` & `Glass queue and device panels`
-            * **Nouvelles pages d'options** :
+            * **Sélecteur d'apparence visuelle & Thème** :
+              * Choix direct entre `Apple Music` (Liquid Glass moderne) et `Spotify Classic` (UI native)
+              * Couleur d'accentuation automatique (`spotifyglass.redesign.accent.auto`) extraite de la pochette en temps réel
+              * Icônes soignées (`spotifyglass.redesign.prettierIcons`) : pastilles de téléchargement translucides et badges SF Symbol épurés
+            * **Nouvelles fonctionnalités & Écrans** :
+              * `Albums` : Pochette plein écran edge-to-edge (`fullCover`), Nombre d'écoutes (`playCounts`), Notes éditoriales (`hideNotes`)
+              * `Home` : Épuration du flux avec masquage de l'IA DJ (`hideDJ`) et de la grille de raccourcis (`hideShortcuts`)
+              * `Library` : Masquage des puces de filtres (`hideChips`) avec ajustement dynamique d'inset
               * `Playlists` : Pochette plein écran (Full screen cover)
-              * `Search` : Masquage des carrousels vidéo courts (Short video carousels) & Shortcuts gap
-              * `Albums` : Notes éditoriales (Album notes) & Nombre d'écoutes (Play counts)
+              * `Search` : Masquage des carrousels vidéo courts & Shortcuts gap
               * `Settings backup` : Exportation, Importation et Réinitialisation JSON
             * **17 Icônes Ares personnalisées** disponibles
             
