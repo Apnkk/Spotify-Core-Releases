@@ -6,7 +6,7 @@ on:
       ipa_url:
         description: 'Direct download URL to decrypted Spotify IPA'
         required: true
-        default: 'https://github.com/Apnkk/Spotify-Core-Releases/releases/download/source-ipa-9.1.92/com.spotify.client_9.1.92_und3fined.ipa'
+        default: 'https://github.com/Apnkk/Spotify-Core-Releases/releases/download/source-ipa-9.1.90/com.spotify.client_9.1.90_und3fined.ipa'
 
 jobs:
   build:
@@ -40,7 +40,7 @@ jobs:
 
       - name: Set Version
         run: |
-          echo "0.52.0-test" > spoti.pw-main/version.txt
+          echo "1.0.0-beta.3" > spoti.pw-main/version.txt
 
       - name: Restore Cached EeveeSpotify
         id: cache-eevee
@@ -115,12 +115,25 @@ jobs:
           tag_name: test-spotifycore-clean
           name: "SpotifyCore Clean Test Build"
           body: |
-            ### SpotifyCore Clean Test Build
-            * Nom du fichier : `SpotifyCore.ipa`
-            * Build 100% propre depuis les sources compilées (sans télémétrie Chroma, sans compte requis, zéro paywall)
-            * 17 Icônes personnalisées Ares accessibles depuis les réglages (Icône de l'application)
-            * Interface Redesigned UI Apple Music & Liquid Glass avec réglages Tab Bar
-            * Aucune alerte de version non supportée
+            ### SpotifyCore 1.0.0-beta.3 Clean Build (Spotify 9.1.90)
+            * **Fichier IPA** : `SpotifyCore.ipa`
+            * **Base Spotify** : `9.1.90` (Officiel décrypté)
+            * **Version Mod** : `1.0.0-beta.3` (100% propre, sans télémétrie Chroma, aucun compte ou paiement requis)
+            * **Visualizer Metal natif** :
+              * 5 Shaders complets inclus : `Bars`, `Nebula`, `Halo`, `Poster`, `Cut` + support Custom .metal
+              * Option `Shuffle shaders on track change` (Changement aléatoire de shader à chaque morceau)
+              * Option `Ignore heat warnings` (Performances Metal débridées)
+            * **Fluid Artwork** : Contrôle du `Grain` (Film grain)
+            * **Player Apple Music & Liquid Glass** :
+              * `Music app top bar` & `Music app icons` (SF Symbols)
+              * `Lyrics line under the cover` (Paroles synchronisées sous la pochette)
+              * `Drag to open` & `Glass queue and device panels`
+            * **Nouvelles pages d'options** :
+              * `Playlists` : Pochette plein écran (Full screen cover)
+              * `Search` : Masquage des carrousels vidéo courts (Short video carousels) & Shortcuts gap
+              * `Albums` : Notes éditoriales (Album notes) & Nombre d'écoutes (Play counts)
+              * `Settings backup` : Exportation, Importation et Réinitialisation JSON
+            * **17 Icônes Ares personnalisées** disponibles
             
             **Direct Download:** [SpotifyCore.ipa](https://github.com/Apnkk/Spotify-Core-Releases/releases/download/test-spotifycore-clean/SpotifyCore.ipa)
           prerelease: true
