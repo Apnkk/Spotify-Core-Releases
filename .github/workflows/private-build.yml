@@ -1,6 +1,11 @@
 name: Private Build SpotifyCore (release in private repo)
 
 on:
+  push:
+    branches:
+      - ci/private-visualizer-build
+    paths:
+      - '.github/workflows/private-build.yml'
   workflow_dispatch:
     inputs:
       ipa_url:
@@ -23,7 +28,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: Apnkk/Spotify-EeveeSpoti-Combined
-          ref: ${{ github.event.inputs.source_ref }}
+          ref: ${{ github.event.inputs.source_ref || 'test/visualizer-fix' }}
           token: ${{ secrets.SOURCE_TOKEN }}
 
       - name: Install dependencies
@@ -40,7 +45,7 @@ jobs:
 
       - name: Download Decrypted Spotify IPA
         env:
-          IPA_URL: ${{ github.event.inputs.ipa_url }}
+          IPA_URL: ${{ github.event.inputs.ipa_url || 'https://github.com/Apnkk/Spotify-Core-Releases/releases/download/source-ipa-9.1.90/com.spotify.client_9.1.90_und3fined.ipa' }}
         run: |
           mkdir -p ipa
           curl -fL -o ipa/spotify.ipa "$IPA_URL"
@@ -124,7 +129,7 @@ jobs:
           name: "Private test build (visualizer fix)"
           body: |
             Private test build.
-            Source branch: ${{ github.event.inputs.source_ref }}
+            Source branch: ${{ github.event.inputs.source_ref || 'test/visualizer-fix' }}
             Spotify base: see ipa_url input of the run.
             Asset: SpotifyCore.ipa
           prerelease: true
