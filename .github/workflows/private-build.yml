@@ -1,0 +1,133 @@
+name: Private Build SpotifyCore (release in private repo)
+
+on:
+  workflow_dispatch:
+    inputs:
+      ipa_url:
+        description: 'Direct download URL to decrypted Spotify IPA'
+        required: true
+        default: 'https://github.com/Apnkk/Spotify-Core-Releases/releases/download/source-ipa-9.1.90/com.spotify.client_9.1.90_und3fined.ipa'
+      source_ref:
+        description: 'Branch of the private source repo to build'
+        required: true
+        default: 'test/visualizer-fix'
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: macos-15
+    steps:
+      - name: Checkout Private Source Repository
+        uses: actions/checkout@v4
+        with:
+          repository: Apnkk/Spotify-EeveeSpoti-Combined
+          ref: ${{ github.event.inputs.source_ref }}
+          token: ${{ secrets.SOURCE_TOKEN }}
+
+      - name: Install dependencies
+        run: |
+          brew install make ldid dpkg
+          python3 -m venv "$RUNNER_TEMP/pyzule-venv"
+          "$RUNNER_TEMP/pyzule-venv/bin/python" -m pip install --upgrade pip
+          "$RUNNER_TEMP/pyzule-venv/bin/python" -m pip install "cyan @ git+https://github.com/asdfzxcvbn/pyzule-rw" pillow
+          echo "$RUNNER_TEMP/pyzule-venv/bin" >> "$GITHUB_PATH"
+
+      - name: Setup Theos
+        run: |
+          git clone --recursive https://github.com/theos/theos.git ~/theos
+
+      - name: Download Decrypted Spotify IPA
+        env:
+          IPA_URL: ${{ github.event.inputs.ipa_url }}
+        run: |
+          mkdir -p ipa
+          curl -fL -o ipa/spotify.ipa "$IPA_URL"
+
+      - name: Set Version
+        run: |
+          echo "1.0.0-beta.3" > spoti.pw-main/version.txt
+
+      - name: Restore Cached EeveeSpotify
+        id: cache-eevee
+        uses: actions/cache/restore@v4
+        with:
+          path: EeveeSpotifyReincarnated-Master/packages
+          key: eevee-deb-${{ runner.os }}-${{ hashFiles('EeveeSpotifyReincarnated-Master/Sources/**', 'EeveeSpotifyReincarnated-Master/Makefile') }}
+
+      - name: Build EeveeSpotify Tweak
+        if: steps.cache-eevee.outputs.cache-hit != 'true'
+        run: |
+          cd EeveeSpotifyReincarnated-Master
+          chmod +x Tools/SwiftProtobufBuild/build-eeveeswiftprotobuf.sh
+          export THEOS="$HOME/theos"
+          export VERSION="7.0.0"
+          export BUILD_NUMBER="1"
+          sed -i '' "s/^Version:.*/Version: 7.0.0/" control 2>/dev/null || sed -i "s/^Version:.*/Version: 7.0.0/" control 2>/dev/null || true
+
+          make build-eeveeswiftprotobuf
+
+          FRAMEWORK_DIR="$THEOS/lib/iphone/rootless/EeveeSwiftProtobuf.framework"
+          if [ ! -d "$FRAMEWORK_DIR" ]; then
+            FRAMEWORK_DIR="$THEOS/lib/iphone/roothide/EeveeSwiftProtobuf.framework"
+          fi
+
+          test -d "$FRAMEWORK_DIR" || {
+            echo "EeveeSwiftProtobuf.framework was not generated"
+            find "$THEOS/lib/iphone" -maxdepth 4 -iname '*SwiftProtobuf*' -print
+            exit 1
+          }
+
+          test -f "$FRAMEWORK_DIR/Modules/module.modulemap" || {
+            echo "EeveeSwiftProtobuf framework has no Swift module"
+            find "$FRAMEWORK_DIR" -maxdepth 4 -type f -print
+            exit 1
+          }
+
+          case "$FRAMEWORK_DIR" in
+            */roothide/*)
+              export THEOS_PACKAGE_SCHEME=roothide
+              ;;
+            *)
+              export THEOS_PACKAGE_SCHEME=rootless
+              ;;
+          esac
+
+          make clean package
+
+      - name: Save Cached EeveeSpotify
+        if: steps.cache-eevee.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v4
+        with:
+          path: EeveeSpotifyReincarnated-Master/packages
+          key: eevee-deb-${{ runner.os }}-${{ hashFiles('EeveeSpotifyReincarnated-Master/Sources/**', 'EeveeSpotifyReincarnated-Master/Makefile') }}
+
+      - name: Build spoti.pw & Combine Tweaks into SpotifyCore.ipa
+        run: |
+          EEVEE_DEB="$(pwd)/$(ls EeveeSpotifyReincarnated-Master/packages/*.deb | head -n 1)"
+          test -f "$EEVEE_DEB" || { echo "EeveeSpotify deb not found"; exit 1; }
+          IPA_PATH="$(pwd)/ipa/spotify.ipa"
+          OUT_PATH="$(pwd)/out/SpotifyCore.ipa"
+          mkdir -p out
+          cd spoti.pw-main
+          chmod +x scripts/*.sh scripts/*.py
+          export THEOS="$HOME/theos"
+          ./scripts/pipeline.sh "$IPA_PATH" --no-flex --extra-deb "$EEVEE_DEB" -o "$OUT_PATH"
+
+      # The IPA goes to the PRIVATE repo only. No artifact upload (public repo).
+      - name: Release IPA (private repo, pre-release)
+        uses: softprops/action-gh-release@v2
+        with:
+          repository: Apnkk/Spotify-EeveeSpoti-Combined
+          tag_name: private-test-visualizer
+          name: "Private test build (visualizer fix)"
+          body: |
+            Private test build.
+            Source branch: ${{ github.event.inputs.source_ref }}
+            Spotify base: see ipa_url input of the run.
+            Asset: SpotifyCore.ipa
+          prerelease: true
+          make_latest: false
+          files: out/SpotifyCore.ipa
+          token: ${{ secrets.SOURCE_TOKEN }}
