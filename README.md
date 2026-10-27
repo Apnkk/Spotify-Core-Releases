@@ -27,6 +27,18 @@
 
 ---
 
+## 🎬 Motion Teaser
+
+<p align="center">
+  <a href="assets/spotify_core_presentation_1080p.mp4">
+    <img src="assets/now-playing.webp" width="80%" style="border-radius: 18px; box-shadow: 0 20px 50px rgba(0,0,0,0.6);" alt="Spotify Core By Ares Video Presentation">
+    <br>
+    <sub>▶ Click to watch the official 1080p Motion Design presentation (MP4)</sub>
+  </a>
+</p>
+
+---
+
 ## 📸 Previews
 
 <p align="center">
