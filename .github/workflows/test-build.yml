@@ -96,7 +96,7 @@ jobs:
           path: EeveeSpotifyReincarnated-Master/packages
           key: eevee-deb-${{ runner.os }}-${{ hashFiles('EeveeSpotifyReincarnated-Master/Sources/**', 'EeveeSpotifyReincarnated-Master/Makefile') }}
 
-      - name: Build spoti.pw & Combine Tweaks into SpotifyCore.ipa
+      - name: Build SpotifyCore & Inject EeveeSpotify into SpotifyCore.ipa
         run: |
           EEVEE_DEB="$(pwd)/$(ls EeveeSpotifyReincarnated-Master/packages/*.deb | head -n 1)"
           test -f "$EEVEE_DEB" || { echo "EeveeSpotify deb not found"; exit 1; }
