@@ -23,6 +23,7 @@ jobs:
 
       - name: Install dependencies
         run: |
+          sudo xcode-select -s /Applications/Xcode.app || sudo xcode-select -s /Applications/Xcode_16.app || sudo xcode-select -s /Applications/Xcode_16.0.app || true
           brew install make ldid dpkg
           python3 -m venv "$RUNNER_TEMP/pyzule-venv"
           "$RUNNER_TEMP/pyzule-venv/bin/python" -m pip install --upgrade pip
