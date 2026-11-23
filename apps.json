@@ -2,31 +2,32 @@
   "name": "Spotify Core By Ares",
   "identifier": "com.ares.spotifycore",
   "sourceURL": "https://raw.githubusercontent.com/Apnkk/Spotify-Core-Releases/main/feather.json",
-  "subtitle": "Lifetime Premium + Liquid Glass",
-  "description": "Spotify Core By Ares official releases repository for Feather and AltStore.",
+  "subtitle": "Spotify 9.1.90 · Liquid Glass + Premium + Downloads",
+  "description": "Spotify Core (Modified by Ares) official releases repository for Feather and AltStore.",
   "iconURL": "https://raw.githubusercontent.com/Apnkk/Spotify-Core-Releases/main/assets/ares_logo.png",
   "website": "https://aress.ovh",
   "apps": [
     {
       "name": "Spotify Core",
       "bundleIdentifier": "com.spotify.client",
-      "developerName": "Ares",
-      "subtitle": "Lifetime Premium + Liquid Glass",
-      "version": "0.22.35",
-      "versionDate": "2026-10-08T19:13:37Z",
-      "versionDescription": "Release v0.22.35: Lifetime Premium + Spotify Core By Ares Combined",
-      "downloadURL": "https://github.com/Apnkk/Spotify-Core-Releases/releases/download/v0.22.35/Spotify_Eevee_SpotiPW_Combined.ipa",
-      "localizedDescription": "Lifetime Premium features (word-synced lyrics, remote flags browser, zero ads, unlimited skips) fused with the revolutionary Liquid Glass interface (Apple Music), custom Ares themes, alternate icons, and audio DSP.",
+      "developerName": "Modified by Ares",
+      "subtitle": "Spotify 9.1.90 · Liquid Glass + Premium + Downloads",
+      "version": "0.60.5",
+      "versionDate": "2026-11-23T19:48:16Z",
+      "versionDescription": "Spotify Core v0.60.5 (Modified by Ares) — Built on Spotify 9.1.90 with Liquid Glass UI (iOS 26+) & Legacy UI (iOS 16.1+), built-in Premium & ad-blocking, synced lyrics & Karaoke (Sing), offline downloads, Audio DSP, AutoMix, Live Activity, and Open in Spotify Core Safari extension.",
+      "downloadURL": "https://github.com/Apnkk/Spotify-Core-Releases/releases/download/v0.60.5/Spotify-Core-0.60.5.ipa",
+      "localizedDescription": "Spotify Core (Modified by Ares) built on Spotify 9.1.90: Liquid Glass UI (iOS 26+) & Legacy UI (iOS 16.1+), built-in Spotify Premium & ad-blocking, synced lyrics & Sing mode, offline downloads, Audio DSP, AutoMix, Live Activity, and Open in Spotify Core Safari extension.",
       "iconURL": "https://raw.githubusercontent.com/Apnkk/Spotify-Core-Releases/main/assets/ares_logo.png",
       "tintColor": "1DB954",
-      "size": 147386381,
+      "size": 138011445,
       "versions": [
         {
-          "version": "0.22.35",
-          "date": "2026-10-08T19:13:37Z",
-          "localizedDescription": "Release v0.22.35: Lifetime Premium + Spotify Core By Ares Combined",
-          "downloadURL": "https://github.com/Apnkk/Spotify-Core-Releases/releases/download/v0.22.35/Spotify_Eevee_SpotiPW_Combined.ipa",
-          "size": 147386381
+          "version": "0.60.5",
+          "date": "2026-11-23T19:48:16Z",
+          "localizedDescription": "Spotify Core v0.60.5 (Modified by Ares) — Built on Spotify 9.1.90 with Liquid Glass UI (iOS 26+) & Legacy UI (iOS 16.1+), built-in Premium & ad-blocking, synced lyrics & Karaoke (Sing), offline downloads, Audio DSP, AutoMix, Live Activity, and Open in Spotify Core Safari extension.",
+          "downloadURL": "https://github.com/Apnkk/Spotify-Core-Releases/releases/download/v0.60.5/Spotify-Core-0.60.5.ipa",
+          "size": 138011445,
+          "minOSVersion": "16.1"
         }
       ]
     }
