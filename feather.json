@@ -12,21 +12,21 @@
       "bundleIdentifier": "com.spotify.client",
       "developerName": "Modified by Ares",
       "subtitle": "Spotify 9.1.90 · Liquid Glass + Premium + 20 Custom Icons",
-      "version": "0.60.8",
-      "versionDate": "2026-11-24T20:57:00Z",
-      "versionDescription": "Spotify Core v0.60.8 (Modified by Ares) — Built on Spotify 9.1.90: Karaoke moved directly under Lyrics in Spotify Core settings, curated first-install defaults applied automatically (Navbar Apple Music icons & hidden labels, Animated Player with Colors fallback, Lossless files, Lock Screen Canvas +3, background Music Haptics, animated album covers, Hide ads & Spoof Premium), plus 20 custom app icons under Appearance -> App icon.",
-      "downloadURL": "https://github.com/Apnkk/Spotify-Core-Releases/releases/download/v0.60.8/Spotify-Core-0.60.8.ipa",
+      "version": "0.60.9",
+      "versionDate": "2026-11-24T21:55:00Z",
+      "versionDescription": "Spotify Core v0.60.9 (Modified by Ares) — Built on Spotify 9.1.90: Spoof Premium now displays localized Premium Individual / Personnel in Your Premium and the sidebar drawer (including Free accounts) while hiding the Trial badge and expiration date line even on active trial accounts.",
+      "downloadURL": "https://github.com/Apnkk/Spotify-Core-Releases/releases/download/v0.60.9/Spotify-Core-0.60.9.ipa",
       "localizedDescription": "Spotify Core (Modified by Ares) built on Spotify 9.1.90: 20 custom app icons in Appearance -> App icon (iOS 16.1+ & iOS 26+), curated first-install defaults, Liquid Glass UI (iOS 26+) & Legacy UI (iOS 16.1+), built-in Spotify Premium & ad-blocking, synced lyrics & Sing mode, offline downloads, Audio DSP, AutoMix, Live Activity, and Open in Spotify Core Safari extension.",
       "iconURL": "https://raw.githubusercontent.com/Apnkk/Spotify-Core-Releases/main/assets/ares_logo.png",
       "tintColor": "1DB954",
-      "size": 141182973,
+      "size": 141190339,
       "versions": [
         {
-          "version": "0.60.8",
-          "date": "2026-11-24T20:57:00Z",
-          "localizedDescription": "Spotify Core v0.60.8 (Modified by Ares) — Built on Spotify 9.1.90: Karaoke moved directly under Lyrics in Spotify Core settings, curated first-install defaults applied automatically (Navbar Apple Music icons & hidden labels, Animated Player with Colors fallback, Lossless files, Lock Screen Canvas +3, background Music Haptics, animated album covers, Hide ads & Spoof Premium), plus 20 custom app icons under Appearance -> App icon.",
-          "downloadURL": "https://github.com/Apnkk/Spotify-Core-Releases/releases/download/v0.60.8/Spotify-Core-0.60.8.ipa",
-          "size": 141182973,
+          "version": "0.60.9",
+          "date": "2026-11-24T21:55:00Z",
+          "localizedDescription": "Spotify Core v0.60.9 (Modified by Ares) — Built on Spotify 9.1.90: Spoof Premium now displays localized Premium Individual / Personnel in Your Premium and the sidebar drawer (including Free accounts) while hiding the Trial badge and expiration date line even on active trial accounts.",
+          "downloadURL": "https://github.com/Apnkk/Spotify-Core-Releases/releases/download/v0.60.9/Spotify-Core-0.60.9.ipa",
+          "size": 141190339,
           "minOSVersion": "16.1"
         }
       ]
