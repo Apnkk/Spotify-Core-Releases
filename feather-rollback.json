@@ -1,0 +1,35 @@
+{
+  "name": "Spotify Core By Ares (Rollback 0.60.11)",
+  "identifier": "com.ares.spotifycore.rollback011",
+  "sourceURL": "https://raw.githubusercontent.com/Apnkk/Spotify-Core-Releases/main/feather-rollback.json",
+  "subtitle": "Spotify 9.1.90 · Rollback v0.60.11",
+  "description": "Spotify Core (Modified by Ares) pinned to version 0.60.11.",
+  "iconURL": "https://raw.githubusercontent.com/Apnkk/Spotify-Core-Releases/main/assets/ares_logo.png",
+  "website": "https://aress.ovh",
+  "apps": [
+    {
+      "name": "Spotify Core",
+      "bundleIdentifier": "com.spotify.client",
+      "developerName": "Modified by Ares",
+      "subtitle": "Spotify 9.1.90 · Rollback v0.60.11",
+      "version": "0.60.11",
+      "versionDate": "2026-11-24T22:40:06Z",
+      "versionDescription": "Spotify Core v0.60.11 (Modified by Ares) — Built on Spotify 9.1.90. Nettoyage de l’interface Premium, ads & privacy et alignement du filtrage fetchmessage sur EeveeSpotifyReincarnated v7.5.0.",
+      "downloadURL": "https://github.com/Apnkk/Spotify-Core-Releases/releases/download/v0.60.11/Spotify-Core-0.60.11.ipa",
+      "localizedDescription": "Spotify Core v0.60.11 built on Spotify 9.1.90. 20 custom app icons, Liquid Glass UI (iOS 26+) and Legacy UI (iOS 16.1+), synced lyrics, Sing mode, offline downloads, Audio DSP, AutoMix and Live Activity.",
+      "iconURL": "https://raw.githubusercontent.com/Apnkk/Spotify-Core-Releases/main/assets/ares_logo.png",
+      "tintColor": "1DB954",
+      "size": 141194691,
+      "versions": [
+        {
+          "version": "0.60.11",
+          "date": "2026-11-24T22:40:06Z",
+          "localizedDescription": "Spotify Core v0.60.11 (Modified by Ares) — Built on Spotify 9.1.90. Nettoyage de l’interface Premium, ads & privacy et alignement du filtrage fetchmessage sur EeveeSpotifyReincarnated v7.5.0.",
+          "downloadURL": "https://github.com/Apnkk/Spotify-Core-Releases/releases/download/v0.60.11/Spotify-Core-0.60.11.ipa",
+          "size": 141194691,
+          "minOSVersion": "16.1"
+        }
+      ]
+    }
+  ]
+}
