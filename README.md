@@ -56,7 +56,7 @@
 
 ## ⚡ What's Inside
 
-Spotify Core v0.60.6 (**Modified by Ares**), built on **Spotify 9.1.90**:
+Spotify Core v0.60.7 (**Modified by Ares**), built on **Spotify 9.1.90**:
 
 * **20 Custom App Icons (Appearance → App icon)** — Choose from 20 custom Spotify Core icons (all iPhone & iPad system sizes, iOS 16.1+ and iOS 26+) plus 8 Liquid Glass icons on iOS 26+, applied across iOS and preserved across updates.
 
@@ -74,7 +74,7 @@ Spotify Core v0.60.6 (**Modified by Ares**), built on **Spotify 9.1.90**:
 
 Grab the latest ready-to-install `.ipa` directly from the Releases page or add the repository source in Feather / AltStore:
 
-👉 **[Download Latest Spotify Core IPA (v0.60.6)](https://github.com/Apnkk/Spotify-Core-Releases/releases/download/v0.60.6/Spotify-Core-0.60.6.ipa)**  
+👉 **[Download Latest Spotify Core IPA (v0.60.7)](https://github.com/Apnkk/Spotify-Core-Releases/releases/download/v0.60.7/Spotify-Core-0.60.7.ipa)**  
 🔗 **[Releases & Changelogs](https://github.com/Apnkk/Spotify-Core-Releases/releases/latest)**  
 📦 **Feather / AltStore Repo URL :** `https://raw.githubusercontent.com/Apnkk/Spotify-Core-Releases/main/feather.json`
 
