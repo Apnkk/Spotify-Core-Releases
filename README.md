@@ -56,15 +56,16 @@
 
 ## ⚡ What's Inside
 
-Spotify Core v0.60.5 (**Modified by Ares**), built on **Spotify 9.1.90**:
+Spotify Core v0.60.6 (**Modified by Ares**), built on **Spotify 9.1.90**:
+
+* **20 Custom App Icons (Appearance → App icon)** — Choose from 20 custom Spotify Core icons (all iPhone & iPad system sizes, iOS 16.1+ and iOS 26+) plus 8 Liquid Glass icons on iOS 26+, applied across iOS and preserved across updates.
 
 * **Liquid Glass UI (iOS 26+) & Legacy UI (iOS 16.1+)** — Redesigned `UIGlassEffect` experience on iOS 26+ alongside full Legacy UI support on iOS 16.1+, configurable in **Spotify Core settings**.
 * **Built-in Premium & Ad-Blocking** — Ad-free listening, unlimited on-demand skips, highest streaming quality, upsell suppression, and telemetry blocking.
 * **Synced Lyrics, Translation & Karaoke (Sing)** — Word-synced lyrics, live translation, and vocal/instrumental separation in Sing mode.
 * **Offline Downloads (Spotify 9.1.90)** — Verified offline download support, quota and device slot inspection, and download management inside **Spotify Core settings**.
 * **Audio DSP & AutoMix** — Integrated crossfeed (`libbs2b`), customizable audio effects, AutoEq headphone profiles, and AutoMix transitions.
-* **Live Activity & Alternate App Icons** — Lock Screen / Dynamic Island Live Activity (iOS 17+) and alternate Home Screen icons.
-* **Safari Link Opener** — Bundled *Open in Spotify Core* Safari extension to route `open.spotify.com` links directly into the app.
+* **Live Activity & Safari Link Opener** — Lock Screen / Dynamic Island Live Activity (iOS 17+) and bundled *Open in Spotify Core* Safari extension to route `open.spotify.com` links directly into the app.
 * **Native In-App Updater** — Checks **Spotify Core Releases** directly in settings so you know when a newer version drops.
 
 ---
@@ -73,7 +74,7 @@ Spotify Core v0.60.5 (**Modified by Ares**), built on **Spotify 9.1.90**:
 
 Grab the latest ready-to-install `.ipa` directly from the Releases page or add the repository source in Feather / AltStore:
 
-👉 **[Download Latest Spotify Core IPA (v0.60.5)](https://github.com/Apnkk/Spotify-Core-Releases/releases/download/v0.60.5/Spotify-Core-0.60.5.ipa)**  
+👉 **[Download Latest Spotify Core IPA (v0.60.6)](https://github.com/Apnkk/Spotify-Core-Releases/releases/download/v0.60.6/Spotify-Core-0.60.6.ipa)**  
 🔗 **[Releases & Changelogs](https://github.com/Apnkk/Spotify-Core-Releases/releases/latest)**  
 📦 **Feather / AltStore Repo URL :** `https://raw.githubusercontent.com/Apnkk/Spotify-Core-Releases/main/feather.json`
 
