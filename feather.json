@@ -12,21 +12,21 @@
       "bundleIdentifier": "com.spotify.client",
       "developerName": "Modified by Ares",
       "subtitle": "Spotify 9.1.90 · Liquid Glass + Premium + 20 Custom Icons",
-      "version": "0.60.11",
-      "versionDate": "2026-11-24T23:20:00Z",
-      "versionDescription": "Spotify Core v0.60.11 (Modified by Ares) — Built on Spotify 9.1.90. Nettoyage de l’interface Premium, ads & privacy et alignement du filtrage fetchmessage sur EeveeSpotifyReincarnated v7.5.0.",
-      "downloadURL": "https://github.com/Apnkk/Spotify-Core-Releases/releases/download/v0.60.11/Spotify-Core-0.60.11.ipa",
-      "localizedDescription": "Spotify Core (Modified by Ares) built on Spotify 9.1.90: 20 custom app icons in Appearance -> App icon (iOS 16.1+ & iOS 26+), Liquid Glass UI (iOS 26+) & Legacy UI (iOS 16.1+), synced lyrics and Sing mode, offline downloads, Audio DSP, AutoMix, Live Activity, and Open in Spotify Core Safari extension.",
+      "version": "0.60.12",
+      "versionDate": "2026-11-24T23:07:00Z",
+      "versionDescription": "Spotify Core v0.60.12 (Modified by Ares) — Built on Spotify 9.1.90: Reworked the 'Premium, ads & privacy' page to match the EeveeSpotifyReincarnated engine (Premium & True Shuffle controls, Hide upsells enabled and migrated ON by default, Clean shared links toggle, Block telemetry enabled by default, expanded 9.1.90 ad service blockers, and clean live counters).",
+      "downloadURL": "https://github.com/Apnkk/Spotify-Core-Releases/releases/download/v0.60.12/Spotify-Core-0.60.12.ipa",
+      "localizedDescription": "Spotify Core (Modified by Ares) built on Spotify 9.1.90: 20 custom app icons in Appearance -> App icon (iOS 16.1+ & iOS 26+), curated first-install defaults, Liquid Glass UI (iOS 26+) & Legacy UI (iOS 16.1+), built-in Spotify Premium Lifetime & ad-blocking, True Shuffle, Clean shared links, synced lyrics & Sing mode, offline downloads, Audio DSP, AutoMix, Live Activity, and Open in Spotify Core Safari extension.",
       "iconURL": "https://raw.githubusercontent.com/Apnkk/Spotify-Core-Releases/main/assets/ares_logo.png",
       "tintColor": "1DB954",
-      "size": 141194691,
+      "size": 141197004,
       "versions": [
         {
-          "version": "0.60.11",
-          "date": "2026-11-24T23:20:00Z",
-          "localizedDescription": "Spotify Core v0.60.11 (Modified by Ares) — Built on Spotify 9.1.90. Nettoyage de l’interface Premium, ads & privacy et alignement du filtrage fetchmessage sur EeveeSpotifyReincarnated v7.5.0.",
-          "downloadURL": "https://github.com/Apnkk/Spotify-Core-Releases/releases/download/v0.60.11/Spotify-Core-0.60.11.ipa",
-          "size": 141194691,
+          "version": "0.60.12",
+          "date": "2026-11-24T23:07:00Z",
+          "localizedDescription": "Spotify Core v0.60.12 (Modified by Ares) — Built on Spotify 9.1.90: Reworked the 'Premium, ads & privacy' page to match the EeveeSpotifyReincarnated engine (Premium & True Shuffle controls, Hide upsells enabled and migrated ON by default, Clean shared links toggle, Block telemetry enabled by default, expanded 9.1.90 ad service blockers, and clean live counters).",
+          "downloadURL": "https://github.com/Apnkk/Spotify-Core-Releases/releases/download/v0.60.12/Spotify-Core-0.60.12.ipa",
+          "size": 141197004,
           "minOSVersion": "16.1"
         }
       ]
