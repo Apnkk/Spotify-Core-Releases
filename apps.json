@@ -12,21 +12,21 @@
       "bundleIdentifier": "com.spotify.client",
       "developerName": "Modified by Ares",
       "subtitle": "Spotify 9.1.90 · Liquid Glass + Premium + 20 Custom Icons",
-      "version": "0.60.13",
-      "versionDate": "2026-11-25T13:11:00Z",
-      "versionDescription": "Spotify Core v0.60.13 (Modified by Ares) — Built on Spotify 9.1.90: Fixed an immediate startup crash in EeveePremiumForce caused by ARC retaining non-NSObject runtime classes during objc_getClassList scanning, added the Block rating prompts toggle in Privacy (enabled by default), and kept the reworked Premium, ads & privacy page (True Shuffle, Hide upsells, Clean shared links, Block telemetry).",
-      "downloadURL": "https://github.com/Apnkk/Spotify-Core-Releases/releases/download/v0.60.13/Spotify-Core-0.60.13.ipa",
-      "localizedDescription": "Spotify Core (Modified by Ares) built on Spotify 9.1.90: 20 custom app icons in Appearance -> App icon (iOS 16.1+ & iOS 26+), curated first-install defaults, Liquid Glass UI (iOS 26+) & Legacy UI (iOS 16.1+), built-in Spotify Premium Lifetime & ad-blocking, True Shuffle, Clean shared links, Block rating prompts, synced lyrics & Sing mode, offline downloads, Audio DSP, AutoMix, Live Activity, and Open in Spotify Core Safari extension.",
+      "version": "0.60.14",
+      "versionDate": "2026-11-25T13:33:00Z",
+      "versionDescription": "Spotify Core v0.60.14 (Modified by Ares) — Built on Spotify 9.1.90: Added an automatic 'Restart Spotify' prompt ('Restart now' or 'Later') whenever you change any Spotify Core setting that requires an app restart, while keeping live settings instant.",
+      "downloadURL": "https://github.com/Apnkk/Spotify-Core-Releases/releases/download/v0.60.14/Spotify-Core-0.60.14.ipa",
+      "localizedDescription": "Spotify Core (Modified by Ares) built on Spotify 9.1.90: 20 custom app icons in Appearance -> App icon (iOS 16.1+ & iOS 26+), curated first-install defaults, Liquid Glass UI (iOS 26+) & Legacy UI (iOS 16.1+), built-in Spotify Premium Lifetime & ad-blocking, True Shuffle, Clean shared links, Block rating prompts, automatic restart prompt on restart-required settings, synced lyrics & Sing mode, offline downloads, Audio DSP, AutoMix, Live Activity, and Open in Spotify Core Safari extension.",
       "iconURL": "https://raw.githubusercontent.com/Apnkk/Spotify-Core-Releases/main/assets/ares_logo.png",
       "tintColor": "1DB954",
-      "size": 141195539,
+      "size": 141196030,
       "versions": [
         {
-          "version": "0.60.13",
-          "date": "2026-11-25T13:11:00Z",
-          "localizedDescription": "Spotify Core v0.60.13 (Modified by Ares) — Built on Spotify 9.1.90: Fixed an immediate startup crash in EeveePremiumForce caused by ARC retaining non-NSObject runtime classes during objc_getClassList scanning, added the Block rating prompts toggle in Privacy (enabled by default), and kept the reworked Premium, ads & privacy page (True Shuffle, Hide upsells, Clean shared links, Block telemetry).",
-          "downloadURL": "https://github.com/Apnkk/Spotify-Core-Releases/releases/download/v0.60.13/Spotify-Core-0.60.13.ipa",
-          "size": 141195539,
+          "version": "0.60.14",
+          "date": "2026-11-25T13:33:00Z",
+          "localizedDescription": "Spotify Core v0.60.14 (Modified by Ares) — Built on Spotify 9.1.90: Added an automatic 'Restart Spotify' prompt ('Restart now' or 'Later') whenever you change any Spotify Core setting that requires an app restart, while keeping live settings instant.",
+          "downloadURL": "https://github.com/Apnkk/Spotify-Core-Releases/releases/download/v0.60.14/Spotify-Core-0.60.14.ipa",
+          "size": 141196030,
           "minOSVersion": "16.1"
         }
       ]
